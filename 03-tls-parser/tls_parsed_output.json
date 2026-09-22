@@ -1,0 +1,14 @@
+[
+  {
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302"
+  },
+  {
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302"
+  }
+]
