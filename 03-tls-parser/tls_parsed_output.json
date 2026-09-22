@@ -1,14 +1,104 @@
 [
   {
-    "src_ip": "127.0.0.1",
-    "dst_ip": "127.0.0.1",
-    "tls_version": "0x0303",
-    "cipher_suite": "0x1302"
+    "source_file": "bad_capture1.pcap",
+    "label": "bad",
+    "src_ip": null,
+    "dst_ip": null,
+    "tls_version": null,
+    "cipher_suite": null,
+    "encrypted": false,
+    "note": "No TLS handshake detected \u2014 likely plaintext/unencrypted traffic"
   },
   {
+    "source_file": "bad_capture2.pcap",
+    "label": "bad",
+    "src_ip": null,
+    "dst_ip": null,
+    "tls_version": null,
+    "cipher_suite": null,
+    "encrypted": false,
+    "note": "No TLS handshake detected \u2014 likely plaintext/unencrypted traffic"
+  },
+  {
+    "source_file": "bad_capture3.pcap",
+    "label": "bad",
+    "src_ip": null,
+    "dst_ip": null,
+    "tls_version": null,
+    "cipher_suite": null,
+    "encrypted": false,
+    "note": "No TLS handshake detected \u2014 likely plaintext/unencrypted traffic"
+  },
+  {
+    "source_file": "good_capture1.pcap",
+    "label": "good",
     "src_ip": "127.0.0.1",
     "dst_ip": "127.0.0.1",
     "tls_version": "0x0303",
-    "cipher_suite": "0x1302"
+    "cipher_suite": "0x1302",
+    "encrypted": true
+  },
+  {
+    "source_file": "good_capture1.pcap",
+    "label": "good",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302",
+    "encrypted": true
+  },
+  {
+    "source_file": "good_capture2.pcap",
+    "label": "good",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302",
+    "encrypted": true
+  },
+  {
+    "source_file": "good_capture2.pcap",
+    "label": "good",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302",
+    "encrypted": true
+  },
+  {
+    "source_file": "good_capture3.pcap",
+    "label": "good",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302",
+    "encrypted": true
+  },
+  {
+    "source_file": "good_capture3.pcap",
+    "label": "good",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302",
+    "encrypted": true
+  },
+  {
+    "source_file": "good_v2.pcap",
+    "label": "good",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302",
+    "encrypted": true
+  },
+  {
+    "source_file": "good_v2.pcap",
+    "label": "good",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302",
+    "encrypted": true
   }
 ]
