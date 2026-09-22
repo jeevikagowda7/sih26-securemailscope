@@ -1,10 +1,8 @@
 import json
 
-# Step 1: Read Jeevika's real output (a LIST of connections now)
 with open("../03-tls-parser/tls_parsed_output.json", "r") as f:
     all_sessions = json.load(f)
 
-# TLS version codes -> readable names
 tls_version_map = {
     "0x0301": "TLSv1.0",
     "0x0302": "TLSv1.1",
@@ -12,13 +10,25 @@ tls_version_map = {
     "0x0304": "TLSv1.3"
 }
 
-# Weak cipher codes (basic starter list — expand later if needed)
-weak_cipher_codes = ["0x0004", "0x0005"]  # old/broken ciphers, example placeholders
+weak_cipher_codes = ["0x0004", "0x0005"]
 
 results = []
 
 for i, data in enumerate(all_sessions):
-    session_id = f"{data.get('src_ip')}->{data.get('dst_ip')}_{i}"
+    source_file = data.get("source_file", f"session_{i}")
+    encrypted = data.get("encrypted", False)
+
+    # If no encryption/handshake happened at all, that's an automatic HIGH risk
+    if not encrypted:
+        results.append({
+            "session_id": source_file,
+            "cert_valid": False,
+            "nist_compliant": False,
+            "risk_score": 100,
+            "risk_level": "HIGH",
+            "reason": data.get("note", "No encryption detected")
+        })
+        continue
 
     tls_code = data.get("tls_version", "")
     tls_version = tls_version_map.get(tls_code, "UNKNOWN")
@@ -26,8 +36,7 @@ for i, data in enumerate(all_sessions):
     cipher_code = data.get("cipher_suite", "")
     is_weak_cipher = cipher_code in weak_cipher_codes
 
-    # NOTE: certificate_presented doesn't exist in her data yet — assuming True for now
-    # ASK JEEVIKA/TEAM: should this field be added?
+    # certificate_presented still doesn't exist — assuming True when encrypted
     cert_valid = True
 
     good_tls_versions = ["TLSv1.2", "TLSv1.3"]
@@ -50,14 +59,14 @@ for i, data in enumerate(all_sessions):
         risk_level = "HIGH"
 
     results.append({
-        "session_id": session_id,
+        "session_id": source_file,
         "cert_valid": cert_valid,
         "nist_compliant": nist_compliant,
         "risk_score": risk_score,
         "risk_level": risk_level
     })
 
-print(results)
+print(json.dumps(results, indent=2))
 
 with open("output.json", "w") as f:
     json.dump(results, f, indent=2)
