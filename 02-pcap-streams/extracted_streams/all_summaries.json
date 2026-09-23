@@ -1,0 +1,137 @@
+[
+  {
+    "pcap": "bad_capture1.pcap",
+    "streams": [
+      {
+        "stream_file": "stream_01_127.0.0.1_3587-127.0.0.1_38796.txt",
+        "endpoint_a": "127.0.0.1:3587",
+        "endpoint_b": "127.0.0.1:38796",
+        "segment_count": 19,
+        "signals": {
+          "auth_login_or_plain_used": true,
+          "starttls_offered_by_server": false,
+          "starttls_used_by_client": false,
+          "decoded_credentials": {
+            "username": "bob@bad.test",
+            "password": "yourNewPassword123"
+          },
+          "attachments": [],
+          "insecure_auth": true
+        },
+        "source_pcap": "bad_capture1.pcap"
+      }
+    ],
+    "packet_count": 29
+  },
+  {
+    "pcap": "bad_capture2.pcap",
+    "streams": [
+      {
+        "stream_file": "stream_01_127.0.0.1_3587-127.0.0.1_42286.txt",
+        "endpoint_a": "127.0.0.1:3587",
+        "endpoint_b": "127.0.0.1:42286",
+        "segment_count": 19,
+        "signals": {
+          "auth_login_or_plain_used": true,
+          "starttls_offered_by_server": false,
+          "starttls_used_by_client": false,
+          "decoded_credentials": {
+            "username": "bob@bad.test",
+            "password": "yourNewPassword123"
+          },
+          "attachments": [],
+          "insecure_auth": true
+        },
+        "source_pcap": "bad_capture2.pcap"
+      }
+    ],
+    "packet_count": 29
+  },
+  {
+    "pcap": "bad_capture3.pcap",
+    "streams": [
+      {
+        "stream_file": "stream_01_127.0.0.1_3587-127.0.0.1_35974.txt",
+        "endpoint_a": "127.0.0.1:3587",
+        "endpoint_b": "127.0.0.1:35974",
+        "segment_count": 19,
+        "signals": {
+          "auth_login_or_plain_used": true,
+          "starttls_offered_by_server": false,
+          "starttls_used_by_client": false,
+          "decoded_credentials": {
+            "username": "bob@bad.test",
+            "password": "yourNewPassword123"
+          },
+          "attachments": [],
+          "insecure_auth": true
+        },
+        "source_pcap": "bad_capture3.pcap"
+      }
+    ],
+    "packet_count": 29
+  },
+  {
+    "pcap": "good_capture1.pcap",
+    "streams": [
+      {
+        "stream_file": "stream_01_127.0.0.1_2587-127.0.0.1_36492.txt",
+        "endpoint_a": "127.0.0.1:2587",
+        "endpoint_b": "127.0.0.1:36492",
+        "segment_count": 27,
+        "signals": {
+          "auth_login_or_plain_used": false,
+          "starttls_offered_by_server": true,
+          "starttls_used_by_client": true,
+          "decoded_credentials": {},
+          "attachments": [],
+          "insecure_auth": false
+        },
+        "source_pcap": "good_capture1.pcap"
+      }
+    ],
+    "packet_count": 36
+  },
+  {
+    "pcap": "good_capture2.pcap",
+    "streams": [
+      {
+        "stream_file": "stream_01_127.0.0.1_2587-127.0.0.1_38616.txt",
+        "endpoint_a": "127.0.0.1:2587",
+        "endpoint_b": "127.0.0.1:38616",
+        "segment_count": 28,
+        "signals": {
+          "auth_login_or_plain_used": false,
+          "starttls_offered_by_server": true,
+          "starttls_used_by_client": true,
+          "decoded_credentials": {},
+          "attachments": [],
+          "insecure_auth": false
+        },
+        "source_pcap": "good_capture2.pcap"
+      }
+    ],
+    "packet_count": 37
+  },
+  {
+    "pcap": "good_capture3.pcap",
+    "streams": [
+      {
+        "stream_file": "stream_01_127.0.0.1_2587-127.0.0.1_42754.txt",
+        "endpoint_a": "127.0.0.1:2587",
+        "endpoint_b": "127.0.0.1:42754",
+        "segment_count": 28,
+        "signals": {
+          "auth_login_or_plain_used": false,
+          "starttls_offered_by_server": true,
+          "starttls_used_by_client": true,
+          "decoded_credentials": {},
+          "attachments": [],
+          "insecure_auth": false
+        },
+        "source_pcap": "good_capture3.pcap"
+      }
+    ],
+    "packet_count": 37
+  }
+]
