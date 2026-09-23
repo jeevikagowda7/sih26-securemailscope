@@ -31,8 +31,10 @@ Usage:
 import sys
 import json
 import os
+import re
 import asyncio
 from collections import defaultdict
+from datetime import datetime
 
 try:
     import pyshark
@@ -93,6 +95,38 @@ def identify_protocol(src_port, dst_port):
         if port in PORT_MAP:
             return PORT_MAP[port]
     return (None, None)
+
+
+def parse_timestamp(ts_str):
+    """
+    Turn pkt.sniff_timestamp into a plain number of seconds, whichever
+    format it comes in.
+
+    Older tshark gives something like "1758537...123456" (a plain
+    number already). Newer tshark (e.g. 4.6.8, seen on Sumaiya's
+    laptop) instead gives a text date like
+    "2026-09-22T10:08:00.631283360Z" - this crashed the old code,
+    which just tried float() on it directly. This function handles
+    both, so it works regardless of which tshark version is installed.
+    """
+    try:
+        return float(ts_str)
+    except ValueError:
+        pass
+
+    # Text-date format. Python's datetime can only handle up to
+    # microseconds (6 digits) in the fractional-seconds part, but
+    # tshark sometimes gives nanoseconds (9 digits), so trim that down
+    # first.
+    match = re.match(r"^(.*T\d{2}:\d{2}:\d{2})\.(\d+)(Z|[+-]\d{2}:\d{2})$", ts_str)
+    if match:
+        base, frac, tz = match.groups()
+        frac_microseconds = (frac + "000000")[:6]
+        tz_normalized = "+00:00" if tz == "Z" else tz
+        iso_string = f"{base}.{frac_microseconds}{tz_normalized}"
+        return datetime.fromisoformat(iso_string).timestamp()
+
+    raise ValueError(f"Could not understand this timestamp format: {ts_str!r}")
 
 
 def extract_streams(pcap_path):
@@ -159,7 +193,7 @@ def extract_streams(pcap_path):
         s["stream_id"] = stream_id
         s["packet_count"] += 1
 
-        ts = float(pkt.sniff_timestamp)
+        ts = parse_timestamp(pkt.sniff_timestamp)
         if s["first_timestamp"] is None:
             s["first_timestamp"] = ts
         s["last_timestamp"] = ts
@@ -250,7 +284,17 @@ def main():
         print(f"File not found: {pcap_path}")
         sys.exit(1)
 
-    output_path = os.path.splitext(pcap_path)[0] + "_streams.json"
+    # Always save the output JSON into the extracted_streams folder,
+    # next to this script - not next to whatever pcap file was given -
+    # so every result lands in one predictable place (02-pcap-streams\
+    # extracted_streams) regardless of where the input pcap lives.
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_dir = os.path.join(script_dir, "extracted_streams")
+    os.makedirs(output_dir, exist_ok=True)
+
+    pcap_filename = os.path.basename(pcap_path)
+    output_filename = os.path.splitext(pcap_filename)[0] + "_streams.json"
+    output_path = os.path.join(output_dir, output_filename)
 
     streams = extract_streams(pcap_path)
     save_results(streams, output_path)

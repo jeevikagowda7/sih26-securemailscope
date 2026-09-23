@@ -284,7 +284,17 @@ def main():
         print(f"File not found: {pcap_path}")
         sys.exit(1)
 
-    output_path = os.path.splitext(pcap_path)[0] + "_streams.json"
+    # Always save the output JSON into the extracted_streams folder,
+    # next to this script - not next to whatever pcap file was given -
+    # so every result lands in one predictable place (02-pcap-streams\
+    # extracted_streams) regardless of where the input pcap lives.
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_dir = os.path.join(script_dir, "extracted_streams")
+    os.makedirs(output_dir, exist_ok=True)
+
+    pcap_filename = os.path.basename(pcap_path)
+    output_filename = os.path.splitext(pcap_filename)[0] + "_streams.json"
+    output_path = os.path.join(output_dir, output_filename)
 
     streams = extract_streams(pcap_path)
     save_results(streams, output_path)
