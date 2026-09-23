@@ -1,0 +1,40 @@
+services:
+  good-mail:
+    image: docker.io/mailserver/docker-mailserver:latest
+    container_name: good-mail
+    hostname: mail
+    domainname: good.test
+    ports:
+      - "2525:25"
+      - "2587:587"
+      - "2993:993"
+    environment:
+      - PERMIT_DOCKER=network
+      - ONE_DIR=1
+    volumes:
+      - ./good-mail-data/mail-data:/var/mail
+      - ./good-mail-data/mail-state:/var/mail-state
+      - ./good-mail-data/mail-logs:/var/log/mail
+      - ./good-mail-data/config:/tmp/docker-mailserver
+    cap_add:
+      - NET_ADMIN
+
+  bad-mail:
+    image: docker.io/mailserver/docker-mailserver:latest
+    container_name: bad-mail
+    hostname: mail
+    domainname: bad.test
+    ports:
+      - "3525:25"
+      - "3587:587"
+      - "3993:993"
+    environment:
+      - PERMIT_DOCKER=network
+      - ONE_DIR=1
+    volumes:
+      - ./bad-mail-data/mail-data:/var/mail
+      - ./bad-mail-data/mail-state:/var/mail-state
+      - ./bad-mail-data/mail-logs:/var/log/mail
+      - ./bad-mail-data/config:/tmp/docker-mailserver
+    cap_add:
+      - NET_ADMIN
