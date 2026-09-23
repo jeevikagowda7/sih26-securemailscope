@@ -1,8 +1,7 @@
-session_id,tls_version,weak_cipher,starttls_used,cert_valid,risk_score,risk_level
-bad_capture1.pcap,0.0,False,False,False,100,HIGH
-bad_capture2.pcap,0.0,False,False,False,100,HIGH
-bad_capture3.pcap,0.0,False,False,False,100,HIGH
-good_capture1.pcap,1.2,False,True,True,0,LOW
-good_capture2.pcap,1.2,False,True,True,0,LOW
-good_capture3.pcap,1.2,False,True,True,0,LOW
-good_v2.pcap,1.2,False,True,True,0,LOW
+session_id,tls_version,weak_cipher,starttls_used,starttls_offered,insecure_auth,credentials_exposed,encrypted,cert_valid,risk_score,risk_level
+bad_capture1.pcap,0.0,False,False,False,True,True,False,False,100,HIGH
+bad_capture2.pcap,0.0,False,False,False,True,True,False,False,100,HIGH
+bad_capture3.pcap,0.0,False,False,False,True,True,False,False,100,HIGH
+good_capture1.pcap,1.2,False,True,True,False,False,True,True,0,LOW
+good_capture2.pcap,1.2,False,True,True,False,False,True,True,0,LOW
+good_capture3.pcap,1.2,False,True,True,False,False,True,True,0,LOW

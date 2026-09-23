@@ -1,11 +1,9 @@
 import pandas as pd
 import json
 
-# Load Jeevika's raw parsed details (richer: tls_version, cipher_suite, encrypted)
 with open("../03-tls-parser/tls_parsed_output.json") as f:
     parsed = json.load(f)
 
-# Load Krithiksha's calculated risk verdicts
 with open("../04-certs-rules/output.json") as f:
     rules_output = json.load(f)
 
@@ -16,23 +14,21 @@ weak_cipher_codes = ["0x0004", "0x0005"]
 
 rows = []
 for entry in parsed:
-    session_id = entry.get("source_file", "unknown")
-    encrypted = entry.get("encrypted", False)
-    tls_code = entry.get("tls_version", "")
-    cipher_code = entry.get("cipher_suite", "")
-
     rows.append({
-        "session_id": session_id,
-        "tls_version": tls_version_map.get(tls_code, 0.0),  # 0.0 = unknown/none
-        "weak_cipher": cipher_code in weak_cipher_codes,
-        "starttls_used": encrypted,
+        "session_id": entry.get("source_pcap", "unknown"),
+        "tls_version": tls_version_map.get(entry.get("tls_version", ""), 0.0),
+        "weak_cipher": entry.get("cipher_suite", "") in weak_cipher_codes,
+        "starttls_used": entry.get("starttls_used_by_client", False),
+        "starttls_offered": entry.get("starttls_offered_by_server", False),
+        "insecure_auth": entry.get("insecure_auth", False),
+        "credentials_exposed": entry.get("credentials_exposed", False),
+        "encrypted": entry.get("encrypted", False),
     })
 
-parsed_df = pd.DataFrame(rows).drop_duplicates()
+parsed_df = pd.DataFrame(rows).drop_duplicates(subset="session_id")
 
-rules_df = pd.DataFrame(rules_output)[["session_id", "cert_valid", "risk_score", "risk_level"]].drop_duplicates()
+rules_df = pd.DataFrame(rules_output)[["session_id", "cert_valid", "risk_score", "risk_level"]].drop_duplicates(subset="session_id")
 
-# Merge both on session_id
 final_df = pd.merge(parsed_df, rules_df, on="session_id", how="inner")
 
 print(final_df)
