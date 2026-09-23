@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+01-data-lab/docker/good-mail-data/
+01-data-lab/docker/bad-mail-data/
