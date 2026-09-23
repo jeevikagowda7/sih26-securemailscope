@@ -1,7 +1,6 @@
 [
   {
     "source_pcap": "bad_capture1.pcap",
-    "stream_file": "stream_01_127.0.0.1_3587-127.0.0.1_38796.txt",
     "endpoint_a": "127.0.0.1:3587",
     "endpoint_b": "127.0.0.1:38796",
     "starttls_offered_by_server": false,
@@ -9,11 +8,10 @@
     "insecure_auth": true,
     "credentials_exposed": true,
     "encrypted": false,
-    "note": "No STARTTLS offered or used \u2014 fully plaintext session"
+    "note": "No STARTTLS used \u2014 plaintext session"
   },
   {
     "source_pcap": "bad_capture2.pcap",
-    "stream_file": "stream_01_127.0.0.1_3587-127.0.0.1_42286.txt",
     "endpoint_a": "127.0.0.1:3587",
     "endpoint_b": "127.0.0.1:42286",
     "starttls_offered_by_server": false,
@@ -21,11 +19,10 @@
     "insecure_auth": true,
     "credentials_exposed": true,
     "encrypted": false,
-    "note": "No STARTTLS offered or used \u2014 fully plaintext session"
+    "note": "No STARTTLS used \u2014 plaintext session"
   },
   {
     "source_pcap": "bad_capture3.pcap",
-    "stream_file": "stream_01_127.0.0.1_3587-127.0.0.1_35974.txt",
     "endpoint_a": "127.0.0.1:3587",
     "endpoint_b": "127.0.0.1:35974",
     "starttls_offered_by_server": false,
@@ -33,11 +30,10 @@
     "insecure_auth": true,
     "credentials_exposed": true,
     "encrypted": false,
-    "note": "No STARTTLS offered or used \u2014 fully plaintext session"
+    "note": "No STARTTLS used \u2014 plaintext session"
   },
   {
     "source_pcap": "good_capture1.pcap",
-    "stream_file": "stream_01_127.0.0.1_2587-127.0.0.1_36492.txt",
     "endpoint_a": "127.0.0.1:2587",
     "endpoint_b": "127.0.0.1:36492",
     "starttls_offered_by_server": true,
@@ -50,7 +46,6 @@
   },
   {
     "source_pcap": "good_capture2.pcap",
-    "stream_file": "stream_01_127.0.0.1_2587-127.0.0.1_38616.txt",
     "endpoint_a": "127.0.0.1:2587",
     "endpoint_b": "127.0.0.1:38616",
     "starttls_offered_by_server": true,
@@ -63,7 +58,6 @@
   },
   {
     "source_pcap": "good_capture3.pcap",
-    "stream_file": "stream_01_127.0.0.1_2587-127.0.0.1_42754.txt",
     "endpoint_a": "127.0.0.1:2587",
     "endpoint_b": "127.0.0.1:42754",
     "starttls_offered_by_server": true,
@@ -73,5 +67,32 @@
     "tls_version": "0x0303",
     "cipher_suite": "0x1302",
     "encrypted": true
+  },
+  {
+    "source_pcap": "good_capture4_attachment.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": true,
+    "tls_client_hello_seen": false,
+    "encrypted": false,
+    "note": "STARTTLS requested but handshake never completed \u2014 downgrade"
+  },
+  {
+    "source_pcap": "good_capture5_downgrade.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": true,
+    "tls_client_hello_seen": false,
+    "encrypted": false,
+    "note": "STARTTLS requested but handshake never completed \u2014 downgrade"
+  },
+  {
+    "source_pcap": "good_capture6_multirecipient.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": true,
+    "tls_client_hello_seen": false,
+    "encrypted": false,
+    "note": "STARTTLS requested but handshake never completed \u2014 downgrade"
   }
 ]
