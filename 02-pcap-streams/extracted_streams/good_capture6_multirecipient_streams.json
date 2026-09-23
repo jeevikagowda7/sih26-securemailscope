@@ -13,8 +13,8 @@
     "last_timestamp": 1790141393.864423,
     "starttls_seen": true,
     "starttls_packet_number": 9,
-    "tls_client_hello_seen": false,
-    "tls_client_hello_packet_number": null,
+    "tls_client_hello_seen": true,
+    "tls_client_hello_packet_number": 11,
     "duration_seconds": 0.299
   }
 ]
