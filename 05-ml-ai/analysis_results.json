@@ -4,16 +4,16 @@
     "risk_score": 100,
     "risk_level": "HIGH",
     "ai_anomaly": false,
-    "verdict": "MEDIUM RISK (rules flagged, AI didn't)",
-    "explanation": "Login credentials were sent in plaintext \u2014 enforce STARTTLS/TLS before allowing authentication. | Insecure authentication method used (e.g. AUTH PLAIN/LOGIN without encryption). | Server never offered STARTTLS \u2014 enable STARTTLS support on the mail server. | Certificate issue detected \u2014 renew/reissue from a trusted CA.",
+    "verdict": "HIGH RISK (rules flagged, AI unsure)",
+    "explanation": "Credentials exposed in plaintext",
     "shap_breakdown": {
-      "starttls_used": 0.0983,
-      "insecure_auth": 0.09,
-      "tls_version": 0.08,
-      "credentials_exposed": 0.07,
-      "starttls_offered": 0.0633,
-      "cert_valid": 0.0617,
-      "encrypted": 0.0267,
+      "cert_valid": 0.209,
+      "tls_version": 0.1284,
+      "encrypted": 0.0701,
+      "credentials_exposed": 0.0348,
+      "starttls_used": 0.0306,
+      "insecure_auth": 0.0262,
+      "starttls_offered": 0.0203,
       "weak_cipher": 0.0
     }
   },
@@ -22,16 +22,16 @@
     "risk_score": 100,
     "risk_level": "HIGH",
     "ai_anomaly": false,
-    "verdict": "MEDIUM RISK (rules flagged, AI didn't)",
-    "explanation": "Login credentials were sent in plaintext \u2014 enforce STARTTLS/TLS before allowing authentication. | Insecure authentication method used (e.g. AUTH PLAIN/LOGIN without encryption). | Server never offered STARTTLS \u2014 enable STARTTLS support on the mail server. | Certificate issue detected \u2014 renew/reissue from a trusted CA.",
+    "verdict": "HIGH RISK (rules flagged, AI unsure)",
+    "explanation": "Credentials exposed in plaintext",
     "shap_breakdown": {
-      "starttls_used": 0.0983,
-      "insecure_auth": 0.09,
-      "tls_version": 0.08,
-      "credentials_exposed": 0.07,
-      "starttls_offered": 0.0633,
-      "cert_valid": 0.0617,
-      "encrypted": 0.0267,
+      "cert_valid": 0.209,
+      "tls_version": 0.1284,
+      "encrypted": 0.0701,
+      "credentials_exposed": 0.0348,
+      "starttls_used": 0.0306,
+      "insecure_auth": 0.0262,
+      "starttls_offered": 0.0203,
       "weak_cipher": 0.0
     }
   },
@@ -40,16 +40,16 @@
     "risk_score": 100,
     "risk_level": "HIGH",
     "ai_anomaly": false,
-    "verdict": "MEDIUM RISK (rules flagged, AI didn't)",
-    "explanation": "Login credentials were sent in plaintext \u2014 enforce STARTTLS/TLS before allowing authentication. | Insecure authentication method used (e.g. AUTH PLAIN/LOGIN without encryption). | Server never offered STARTTLS \u2014 enable STARTTLS support on the mail server. | Certificate issue detected \u2014 renew/reissue from a trusted CA.",
+    "verdict": "HIGH RISK (rules flagged, AI unsure)",
+    "explanation": "Credentials exposed in plaintext",
     "shap_breakdown": {
-      "starttls_used": 0.0983,
-      "insecure_auth": 0.09,
-      "tls_version": 0.08,
-      "credentials_exposed": 0.07,
-      "starttls_offered": 0.0633,
-      "cert_valid": 0.0617,
-      "encrypted": 0.0267,
+      "cert_valid": 0.209,
+      "tls_version": 0.1284,
+      "encrypted": 0.0701,
+      "credentials_exposed": 0.0348,
+      "starttls_used": 0.0306,
+      "insecure_auth": 0.0262,
+      "starttls_offered": 0.0203,
       "weak_cipher": 0.0
     }
   },
@@ -57,54 +57,234 @@
     "session_id": "good_capture1.pcap",
     "risk_score": 0,
     "risk_level": "LOW",
-    "ai_anomaly": false,
-    "verdict": "SAFE",
+    "ai_anomaly": true,
+    "verdict": "WATCH (AI flagged, rules found nothing)",
     "explanation": "No issues detected.",
     "shap_breakdown": {
       "weak_cipher": 0.0,
-      "cert_valid": -0.0383,
-      "encrypted": -0.0433,
-      "starttls_offered": -0.0667,
-      "tls_version": -0.07,
-      "credentials_exposed": -0.08,
-      "insecure_auth": -0.08,
-      "starttls_used": -0.1117
+      "insecure_auth": -0.0146,
+      "credentials_exposed": -0.0217,
+      "starttls_offered": -0.0437,
+      "starttls_used": -0.0522,
+      "encrypted": -0.0635,
+      "tls_version": -0.1209,
+      "cert_valid": -0.1639
     }
   },
   {
     "session_id": "good_capture2.pcap",
     "risk_score": 0,
     "risk_level": "LOW",
-    "ai_anomaly": false,
-    "verdict": "SAFE",
+    "ai_anomaly": true,
+    "verdict": "WATCH (AI flagged, rules found nothing)",
     "explanation": "No issues detected.",
     "shap_breakdown": {
       "weak_cipher": 0.0,
-      "cert_valid": -0.0383,
-      "encrypted": -0.0433,
-      "starttls_offered": -0.0667,
-      "tls_version": -0.07,
-      "credentials_exposed": -0.08,
-      "insecure_auth": -0.08,
-      "starttls_used": -0.1117
+      "insecure_auth": -0.0146,
+      "credentials_exposed": -0.0217,
+      "starttls_offered": -0.0437,
+      "starttls_used": -0.0522,
+      "encrypted": -0.0635,
+      "tls_version": -0.1209,
+      "cert_valid": -0.1639
     }
   },
   {
     "session_id": "good_capture3.pcap",
     "risk_score": 0,
     "risk_level": "LOW",
+    "ai_anomaly": true,
+    "verdict": "WATCH (AI flagged, rules found nothing)",
+    "explanation": "No issues detected.",
+    "shap_breakdown": {
+      "weak_cipher": 0.0,
+      "insecure_auth": -0.0146,
+      "credentials_exposed": -0.0217,
+      "starttls_offered": -0.0437,
+      "starttls_used": -0.0522,
+      "encrypted": -0.0635,
+      "tls_version": -0.1209,
+      "cert_valid": -0.1639
+    }
+  },
+  {
+    "session_id": "bad_capture4_imap.pcap",
+    "risk_score": 100,
+    "risk_level": "HIGH",
+    "ai_anomaly": false,
+    "verdict": "HIGH RISK (rules flagged, AI unsure)",
+    "explanation": "No STARTTLS and no TLS handshake \u2014 plaintext",
+    "shap_breakdown": {
+      "cert_valid": 0.2537,
+      "tls_version": 0.1489,
+      "encrypted": 0.0756,
+      "starttls_used": 0.0343,
+      "starttls_offered": 0.0208,
+      "weak_cipher": 0.0,
+      "insecure_auth": -0.0052,
+      "credentials_exposed": -0.0086
+    }
+  },
+  {
+    "session_id": "bad_capture5_pop3.pcap",
+    "risk_score": 100,
+    "risk_level": "HIGH",
+    "ai_anomaly": false,
+    "verdict": "HIGH RISK (rules flagged, AI unsure)",
+    "explanation": "No STARTTLS and no TLS handshake \u2014 plaintext",
+    "shap_breakdown": {
+      "cert_valid": 0.2537,
+      "tls_version": 0.1489,
+      "encrypted": 0.0756,
+      "starttls_used": 0.0343,
+      "starttls_offered": 0.0208,
+      "weak_cipher": 0.0,
+      "insecure_auth": -0.0052,
+      "credentials_exposed": -0.0086
+    }
+  },
+  {
+    "session_id": "good_capture10_pop3.pcap",
+    "risk_score": 0,
+    "risk_level": "LOW",
     "ai_anomaly": false,
     "verdict": "SAFE",
     "explanation": "No issues detected.",
     "shap_breakdown": {
+      "starttls_used": 0.0139,
+      "starttls_offered": 0.009,
       "weak_cipher": 0.0,
-      "cert_valid": -0.0383,
-      "encrypted": -0.0433,
-      "starttls_offered": -0.0667,
-      "tls_version": -0.07,
-      "credentials_exposed": -0.08,
-      "insecure_auth": -0.08,
-      "starttls_used": -0.1117
+      "insecure_auth": -0.0159,
+      "credentials_exposed": -0.0265,
+      "encrypted": -0.0775,
+      "tls_version": -0.1462,
+      "cert_valid": -0.2375
+    }
+  },
+  {
+    "session_id": "good_capture11_expiredcert.pcap",
+    "risk_score": 50,
+    "risk_level": "MEDIUM",
+    "ai_anomaly": false,
+    "verdict": "MEDIUM RISK (rules flagged, AI unsure)",
+    "explanation": "Server never offered STARTTLS. | Certificate issue detected.",
+    "shap_breakdown": {
+      "cert_valid": 0.4005,
+      "starttls_used": 0.0446,
+      "starttls_offered": 0.024,
+      "weak_cipher": 0.0,
+      "insecure_auth": -0.008,
+      "credentials_exposed": -0.0123,
+      "encrypted": -0.0502,
+      "tls_version": -0.0993
+    }
+  },
+  {
+    "session_id": "good_capture4_attachment.pcap",
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "ai_anomaly": false,
+    "verdict": "SAFE",
+    "explanation": "No issues detected.",
+    "shap_breakdown": {
+      "starttls_used": 0.0139,
+      "starttls_offered": 0.009,
+      "weak_cipher": 0.0,
+      "insecure_auth": -0.0159,
+      "credentials_exposed": -0.0265,
+      "encrypted": -0.0775,
+      "tls_version": -0.1462,
+      "cert_valid": -0.2375
+    }
+  },
+  {
+    "session_id": "good_capture5_downgrade.pcap",
+    "risk_score": 100,
+    "risk_level": "HIGH",
+    "ai_anomaly": false,
+    "verdict": "HIGH RISK (rules flagged, AI unsure)",
+    "explanation": "STARTTLS requested but no TLS handshake found \u2014 downgrade",
+    "shap_breakdown": {
+      "cert_valid": 0.2537,
+      "tls_version": 0.1489,
+      "encrypted": 0.0756,
+      "starttls_used": 0.0343,
+      "starttls_offered": 0.0208,
+      "weak_cipher": 0.0,
+      "insecure_auth": -0.0052,
+      "credentials_exposed": -0.0086
+    }
+  },
+  {
+    "session_id": "good_capture6_multirecipient.pcap",
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "ai_anomaly": false,
+    "verdict": "SAFE",
+    "explanation": "No issues detected.",
+    "shap_breakdown": {
+      "starttls_used": 0.0139,
+      "starttls_offered": 0.009,
+      "weak_cipher": 0.0,
+      "insecure_auth": -0.0159,
+      "credentials_exposed": -0.0265,
+      "encrypted": -0.0775,
+      "tls_version": -0.1462,
+      "cert_valid": -0.2375
+    }
+  },
+  {
+    "session_id": "good_capture7_largeattachment.pcap",
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "ai_anomaly": false,
+    "verdict": "SAFE",
+    "explanation": "No issues detected.",
+    "shap_breakdown": {
+      "starttls_used": 0.0139,
+      "starttls_offered": 0.009,
+      "weak_cipher": 0.0,
+      "insecure_auth": -0.0159,
+      "credentials_exposed": -0.0265,
+      "encrypted": -0.0775,
+      "tls_version": -0.1462,
+      "cert_valid": -0.2375
+    }
+  },
+  {
+    "session_id": "good_capture8_weaktls.pcap",
+    "risk_score": 100,
+    "risk_level": "HIGH",
+    "ai_anomaly": false,
+    "verdict": "HIGH RISK (rules flagged, AI unsure)",
+    "explanation": "Server never offered STARTTLS. | Certificate issue detected.",
+    "shap_breakdown": {
+      "cert_valid": 0.3101,
+      "tls_version": 0.1584,
+      "starttls_used": 0.0371,
+      "starttls_offered": 0.0241,
+      "weak_cipher": 0.0,
+      "insecure_auth": -0.0058,
+      "credentials_exposed": -0.0089,
+      "encrypted": -0.0457
+    }
+  },
+  {
+    "session_id": "good_capture9_imap.pcap",
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "ai_anomaly": false,
+    "verdict": "SAFE",
+    "explanation": "No issues detected.",
+    "shap_breakdown": {
+      "starttls_used": 0.0139,
+      "starttls_offered": 0.009,
+      "weak_cipher": 0.0,
+      "insecure_auth": -0.0159,
+      "credentials_exposed": -0.0265,
+      "encrypted": -0.0775,
+      "tls_version": -0.1462,
+      "cert_valid": -0.2375
     }
   }
 ]

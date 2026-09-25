@@ -1,7 +1,17 @@
-session_id,tls_version,weak_cipher,starttls_used,starttls_offered,insecure_auth,credentials_exposed,encrypted,cert_valid,risk_score,risk_level
-bad_capture1.pcap,0.0,False,False,False,True,True,False,False,100,HIGH
-bad_capture2.pcap,0.0,False,False,False,True,True,False,False,100,HIGH
-bad_capture3.pcap,0.0,False,False,False,True,True,False,False,100,HIGH
-good_capture1.pcap,1.2,False,True,True,False,False,True,True,0,LOW
-good_capture2.pcap,1.2,False,True,True,False,False,True,True,0,LOW
-good_capture3.pcap,1.2,False,True,True,False,False,True,True,0,LOW
+session_id,tls_version,weak_cipher,starttls_used,starttls_offered,insecure_auth,credentials_exposed,encrypted,cert_valid,risk_score,risk_level,reason
+bad_capture1.pcap,0.0,False,False,False,True,True,False,False,100,HIGH,Credentials exposed in plaintext
+bad_capture2.pcap,0.0,False,False,False,True,True,False,False,100,HIGH,Credentials exposed in plaintext
+bad_capture3.pcap,0.0,False,False,False,True,True,False,False,100,HIGH,Credentials exposed in plaintext
+good_capture1.pcap,1.2,False,True,True,False,False,True,True,0,LOW,
+good_capture2.pcap,1.2,False,True,True,False,False,True,True,0,LOW,
+good_capture3.pcap,1.2,False,True,True,False,False,True,True,0,LOW,
+bad_capture4_imap.pcap,0.0,False,False,False,False,False,False,False,100,HIGH,No STARTTLS and no TLS handshake — plaintext
+bad_capture5_pop3.pcap,0.0,False,False,False,False,False,False,False,100,HIGH,No STARTTLS and no TLS handshake — plaintext
+good_capture10_pop3.pcap,1.2,False,False,False,False,False,True,True,0,LOW,
+good_capture11_expiredcert.pcap,1.2,False,False,False,False,False,True,False,50,MEDIUM,
+good_capture4_attachment.pcap,1.2,False,False,False,False,False,True,True,0,LOW,
+good_capture5_downgrade.pcap,0.0,False,False,False,False,False,False,False,100,HIGH,STARTTLS requested but no TLS handshake found — downgrade
+good_capture6_multirecipient.pcap,1.2,False,False,False,False,False,True,True,0,LOW,
+good_capture7_largeattachment.pcap,1.2,False,False,False,False,False,True,True,0,LOW,
+good_capture8_weaktls.pcap,0.0,False,False,False,False,False,True,False,100,HIGH,
+good_capture9_imap.pcap,1.2,False,False,False,False,False,True,True,0,LOW,

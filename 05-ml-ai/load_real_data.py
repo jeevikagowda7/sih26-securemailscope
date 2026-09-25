@@ -27,7 +27,10 @@ for entry in parsed:
 
 parsed_df = pd.DataFrame(rows).drop_duplicates(subset="session_id")
 
-rules_df = pd.DataFrame(rules_output)[["session_id", "cert_valid", "risk_score", "risk_level"]].drop_duplicates(subset="session_id")
+rules_df = pd.DataFrame(rules_output)
+if "reason" not in rules_df.columns:
+    rules_df["reason"] = None
+rules_df = rules_df[["session_id", "cert_valid", "risk_score", "risk_level", "reason"]].drop_duplicates(subset="session_id")
 
 final_df = pd.merge(parsed_df, rules_df, on="session_id", how="inner")
 
