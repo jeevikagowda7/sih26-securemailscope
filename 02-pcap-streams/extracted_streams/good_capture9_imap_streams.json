@@ -1,0 +1,20 @@
+[
+  {
+    "stream_id": 0,
+    "source_pcap": "good_capture9_imap.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "src_port": 58090,
+    "dst_port": 2993,
+    "protocol": "IMAP",
+    "expected_security": "implicit-tls",
+    "packet_count": 31,
+    "first_timestamp": 1790319914.480498,
+    "last_timestamp": 1790319962.756153,
+    "starttls_seen": false,
+    "starttls_packet_number": null,
+    "tls_client_hello_seen": true,
+    "tls_client_hello_packet_number": 4,
+    "duration_seconds": 48.276
+  }
+]
