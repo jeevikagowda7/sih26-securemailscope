@@ -15,8 +15,8 @@ Your job (02-pcap-streams) is to be the "sorting" step:
   4. Check whether that conversation used STARTTLS (i.e. it started
      in plain text and then said "ok, let's switch to encrypted now").
   5. If a conversation NEVER encrypted at all, check whether we can
-     see a plaintext IMAP LOGIN command sitting in the open - that's
-     the "leaked credentials" proof for the demo.
+     see a plaintext login (IMAP LOGIN, or POP3 USER/PASS) sitting in
+     the open - that's the "leaked credentials" proof for the demo.
   6. Save a clean, organized JSON summary of each stream.
 
 Someone else on the team (Jeevika, 03-tls-parser) will take YOUR
@@ -70,6 +70,7 @@ PORT_MAP = {
     3993: ("IMAP", "implicit-tls"),           # bad-mail IMAPS
     3143: ("IMAP", "plaintext-or-starttls"),  # bad-mail plaintext IMAP
     2995: ("POP3", "implicit-tls"),           # good-mail POP3S
+    3110: ("POP3", "plaintext-or-starttls"),  # bad-mail plaintext POP3
 }
 
 STARTTLS_KEYWORDS = {
@@ -78,14 +79,15 @@ STARTTLS_KEYWORDS = {
     "POP3": [b"STLS"],
 }
 
-# NEW: pattern for a plaintext IMAP LOGIN command.
-# A real IMAP login looks like:  "a1 LOGIN myuser mypassword"
-# This grabs whatever comes right after LOGIN as the username, then
-# the next word as the password. It only matches readable plain text -
-# encrypted bytes would never match this.
+# Plaintext IMAP LOGIN command: "a1 LOGIN myuser mypassword" (one line).
 IMAP_LOGIN_PATTERN = re.compile(
     rb'\bLOGIN\s+"?([^"\s]+)"?\s+"?([^"\s]+)"?', re.IGNORECASE
 )
+
+# NEW: plaintext POP3 login commands. Unlike IMAP, these come as two
+# separate lines:  "USER bob"  then  "PASS mypassword"
+POP3_USER_PATTERN = re.compile(rb'^\s*USER\s+(\S+)', re.IGNORECASE)
+POP3_PASS_PATTERN = re.compile(rb'^\s*PASS\s+(\S+)', re.IGNORECASE)
 
 
 def identify_protocol(src_port, dst_port):
@@ -152,7 +154,6 @@ def extract_streams(pcap_path):
         "starttls_packet_number": None,
         "tls_client_hello_seen": False,
         "tls_client_hello_packet_number": None,
-        # NEW: credential-leak fields.
         "credentials_leaked": False,
         "leaked_username": None,
         "leaked_password": None,
@@ -201,13 +202,27 @@ def extract_streams(pcap_path):
                         s["starttls_packet_number"] = int(pkt.number)
                         break
 
-            # NEW: plaintext IMAP LOGIN credential check.
+            # Plaintext IMAP LOGIN credential check.
             if raw_bytes and s["protocol"] == "IMAP" and not s["credentials_leaked"]:
                 match = IMAP_LOGIN_PATTERN.search(raw_bytes)
                 if match:
                     s["credentials_leaked"] = True
                     s["leaked_username"] = match.group(1).decode(errors="replace")
                     s["leaked_password"] = match.group(2).decode(errors="replace")
+
+            # NEW: Plaintext POP3 USER/PASS credential check.
+            # First packet gives the username, a later packet gives the
+            # password - we remember the username until the password
+            # shows up, then mark it leaked.
+            if raw_bytes and s["protocol"] == "POP3" and not s["credentials_leaked"]:
+                user_match = POP3_USER_PATTERN.match(raw_bytes)
+                if user_match:
+                    s["leaked_username"] = user_match.group(1).decode(errors="replace")
+                else:
+                    pass_match = POP3_PASS_PATTERN.match(raw_bytes)
+                    if pass_match and s["leaked_username"]:
+                        s["leaked_password"] = pass_match.group(1).decode(errors="replace")
+                        s["credentials_leaked"] = True
 
         if hasattr(pkt, "tls") and not s["tls_client_hello_seen"]:
             s["tls_client_hello_seen"] = True
