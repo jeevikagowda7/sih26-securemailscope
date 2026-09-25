@@ -1,0 +1,20 @@
+[
+  {
+    "stream_id": 0,
+    "source_pcap": "good_capture8_weaktls.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "src_port": 54321,
+    "dst_port": 2587,
+    "protocol": "SMTP",
+    "expected_security": "plaintext-or-starttls",
+    "packet_count": 14,
+    "starttls_seen": true,
+    "starttls_packet_number": 5,
+    "tls_client_hello_seen": true,
+    "tls_client_hello_packet_number": 7,
+    "tls_version": "TLSv1.0",
+    "cipher_suite": "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+    "duration_seconds": 0.412
+  }
+]
