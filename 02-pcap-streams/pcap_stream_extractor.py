@@ -79,6 +79,7 @@ PORT_MAP = {
     3525: ("SMTP", "plaintext-or-starttls"),  # bad-mail SMTP
     3587: ("SMTP", "plaintext-or-starttls"),  # bad-mail submission
     3993: ("IMAP", "implicit-tls"),           # bad-mail IMAPS
+    3143: ("IMAP", "plaintext-or-starttls"),  # bad-mail plaintext IMAP
 }
 
 # Commands that signal "we are about to upgrade to TLS"

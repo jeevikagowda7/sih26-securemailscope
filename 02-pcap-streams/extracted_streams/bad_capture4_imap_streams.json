@@ -1,0 +1,20 @@
+[
+  {
+    "stream_id": 0,
+    "source_pcap": "bad_capture4_imap.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "src_port": 35208,
+    "dst_port": 3143,
+    "protocol": "IMAP",
+    "expected_security": "plaintext-or-starttls",
+    "packet_count": 25,
+    "first_timestamp": 1790320552.393349,
+    "last_timestamp": 1790320599.7164,
+    "starttls_seen": false,
+    "starttls_packet_number": null,
+    "tls_client_hello_seen": false,
+    "tls_client_hello_packet_number": null,
+    "duration_seconds": 47.323
+  }
+]
