@@ -24,8 +24,16 @@ if len(sys.argv) != 2:
 
 pcap_path = sys.argv[1]
 
-CUSTOM_TSHARK_PATH = r"C:\Users\sumai\Sih26\Wireshark\tshark.exe"
-tshark_path = CUSTOM_TSHARK_PATH if os.path.exists(CUSTOM_TSHARK_PATH) else None
+# Known tshark install locations across the team's laptops.
+# The first one that actually exists on this computer gets used.
+KNOWN_CUSTOM_TSHARK_PATHS = [
+    r"C:\Users\sumai\Sih26\Wireshark\tshark.exe",              # Sumaiya's laptop
+    r"C:\Users\varsh\OneDrive\Documents\Wireshark\tshark.exe",  # Varshini's laptop
+]
+tshark_path = next(
+    (path for path in KNOWN_CUSTOM_TSHARK_PATHS if os.path.exists(path)),
+    None,
+)
 
 cap = pyshark.FileCapture(pcap_path, use_json=True, include_raw=True, tshark_path=tshark_path)
 

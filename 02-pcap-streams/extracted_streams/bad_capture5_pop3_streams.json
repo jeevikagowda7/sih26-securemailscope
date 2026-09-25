@@ -1,16 +1,16 @@
 [
   {
     "stream_id": 0,
-    "source_pcap": "bad_capture4_imap.pcap",
+    "source_pcap": "bad_capture5_pop3.pcap",
     "src_ip": "127.0.0.1",
     "dst_ip": "127.0.0.1",
-    "src_port": 35208,
-    "dst_port": 3143,
-    "protocol": "IMAP",
+    "src_port": 39428,
+    "dst_port": 3110,
+    "protocol": "POP3",
     "expected_security": "plaintext-or-starttls",
     "packet_count": 25,
-    "first_timestamp": 1790320552.393349,
-    "last_timestamp": 1790320599.7164,
+    "first_timestamp": 1790322649.351068,
+    "last_timestamp": 1790322689.612318,
     "starttls_seen": false,
     "starttls_packet_number": null,
     "tls_client_hello_seen": false,
@@ -18,6 +18,6 @@
     "credentials_leaked": true,
     "leaked_username": "bob@bad.test",
     "leaked_password": "yourNewPassword123",
-    "duration_seconds": 47.323
+    "duration_seconds": 40.261
   }
 ]
