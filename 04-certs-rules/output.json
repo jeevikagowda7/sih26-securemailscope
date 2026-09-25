@@ -5,6 +5,7 @@
     "nist_compliant": false,
     "risk_score": 100,
     "risk_level": "HIGH",
+    "forward_secrecy": false,
     "reason": "Credentials exposed in plaintext"
   },
   {
@@ -13,6 +14,7 @@
     "nist_compliant": false,
     "risk_score": 100,
     "risk_level": "HIGH",
+    "forward_secrecy": false,
     "reason": "Credentials exposed in plaintext"
   },
   {
@@ -21,6 +23,7 @@
     "nist_compliant": false,
     "risk_score": 100,
     "risk_level": "HIGH",
+    "forward_secrecy": false,
     "reason": "Credentials exposed in plaintext"
   },
   {
@@ -28,21 +31,24 @@
     "cert_valid": true,
     "nist_compliant": true,
     "risk_score": 0,
-    "risk_level": "LOW"
+    "risk_level": "LOW",
+    "forward_secrecy": true
   },
   {
     "session_id": "good_capture2.pcap",
     "cert_valid": true,
     "nist_compliant": true,
     "risk_score": 0,
-    "risk_level": "LOW"
+    "risk_level": "LOW",
+    "forward_secrecy": true
   },
   {
     "session_id": "good_capture3.pcap",
     "cert_valid": true,
     "nist_compliant": true,
     "risk_score": 0,
-    "risk_level": "LOW"
+    "risk_level": "LOW",
+    "forward_secrecy": true
   },
   {
     "session_id": "bad_capture4_imap.pcap",
@@ -50,6 +56,7 @@
     "nist_compliant": false,
     "risk_score": 100,
     "risk_level": "HIGH",
+    "forward_secrecy": false,
     "reason": "No STARTTLS and no TLS handshake \u2014 plaintext"
   },
   {
@@ -58,6 +65,7 @@
     "nist_compliant": false,
     "risk_score": 100,
     "risk_level": "HIGH",
+    "forward_secrecy": false,
     "reason": "No STARTTLS and no TLS handshake \u2014 plaintext"
   },
   {
@@ -65,21 +73,49 @@
     "cert_valid": true,
     "nist_compliant": true,
     "risk_score": 0,
-    "risk_level": "LOW"
+    "risk_level": "LOW",
+    "forward_secrecy": true
   },
   {
     "session_id": "good_capture11_expiredcert.pcap",
     "cert_valid": false,
     "nist_compliant": false,
     "risk_score": 50,
-    "risk_level": "MEDIUM"
+    "risk_level": "MEDIUM",
+    "forward_secrecy": true
+  },
+  {
+    "session_id": "good_capture12_certchain.pcap",
+    "cert_valid": true,
+    "nist_compliant": true,
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "forward_secrecy": true
+  },
+  {
+    "session_id": "good_capture13_tls12valid.pcap",
+    "cert_valid": true,
+    "nist_compliant": true,
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "forward_secrecy": true
+  },
+  {
+    "session_id": "good_capture14_tls12expired.pcap",
+    "cert_valid": false,
+    "nist_compliant": false,
+    "risk_score": 50,
+    "risk_level": "MEDIUM",
+    "forward_secrecy": true,
+    "reason": "Chain contains expired certificate: CN=mail.good.test"
   },
   {
     "session_id": "good_capture4_attachment.pcap",
     "cert_valid": true,
     "nist_compliant": true,
     "risk_score": 0,
-    "risk_level": "LOW"
+    "risk_level": "LOW",
+    "forward_secrecy": true
   },
   {
     "session_id": "good_capture5_downgrade.pcap",
@@ -87,6 +123,7 @@
     "nist_compliant": false,
     "risk_score": 100,
     "risk_level": "HIGH",
+    "forward_secrecy": false,
     "reason": "STARTTLS requested but no TLS handshake found \u2014 downgrade"
   },
   {
@@ -94,27 +131,31 @@
     "cert_valid": true,
     "nist_compliant": true,
     "risk_score": 0,
-    "risk_level": "LOW"
+    "risk_level": "LOW",
+    "forward_secrecy": true
   },
   {
     "session_id": "good_capture7_largeattachment.pcap",
     "cert_valid": true,
     "nist_compliant": true,
     "risk_score": 0,
-    "risk_level": "LOW"
+    "risk_level": "LOW",
+    "forward_secrecy": true
   },
   {
     "session_id": "good_capture8_weaktls.pcap",
     "cert_valid": false,
     "nist_compliant": false,
     "risk_score": 100,
-    "risk_level": "HIGH"
+    "risk_level": "HIGH",
+    "forward_secrecy": false
   },
   {
     "session_id": "good_capture9_imap.pcap",
     "cert_valid": true,
     "nist_compliant": true,
     "risk_score": 0,
-    "risk_level": "LOW"
+    "risk_level": "LOW",
+    "forward_secrecy": true
   }
 ]

@@ -13,6 +13,25 @@ tls_version_map = {
 weak_cipher_codes = ["0x0004", "0x0005"]
 weak_cipher_keywords = ["3DES", "RC4", "DES", "MD5", "NULL", "EXPORT"]
 
+
+def validate_cert_chain(cert_chain):
+    """Checks a certificate chain for expiry and proper linking."""
+    if not cert_chain:
+        return False, "No certificate chain data available"
+
+    for cert in cert_chain:
+        if cert.get("expired"):
+            return False, f"Chain contains expired certificate: {cert.get('subject')}"
+        if cert.get("not_yet_valid"):
+            return False, f"Chain contains not-yet-valid certificate: {cert.get('subject')}"
+
+    for i in range(len(cert_chain) - 1):
+        if cert_chain[i]["issuer"] != cert_chain[i + 1]["subject"]:
+            return False, "Certificate chain is not properly linked"
+
+    return True, None
+
+
 results = []
 
 for i, data in enumerate(all_sessions):
@@ -29,6 +48,7 @@ for i, data in enumerate(all_sessions):
             "nist_compliant": False,
             "risk_score": 100,
             "risk_level": "HIGH",
+            "forward_secrecy": False,
             "reason": "Credentials exposed in plaintext"
         })
         continue
@@ -40,6 +60,7 @@ for i, data in enumerate(all_sessions):
             "nist_compliant": False,
             "risk_score": 100,
             "risk_level": "HIGH",
+            "forward_secrecy": False,
             "reason": "Insecure authentication method used"
         })
         continue
@@ -51,6 +72,7 @@ for i, data in enumerate(all_sessions):
             "nist_compliant": False,
             "risk_score": 100,
             "risk_level": "HIGH",
+            "forward_secrecy": False,
             "reason": data.get("note", "No encryption detected")
         })
         continue
@@ -75,6 +97,18 @@ for i, data in enumerate(all_sessions):
     else:
         cert_valid = (not cert_expired) and (not cert_not_yet_valid)
 
+    # Real chain validation when chain data exists
+    cert_chain = data.get("cert_chain")
+    chain_reason = None
+    if cert_chain:
+        chain_ok, chain_reason = validate_cert_chain(cert_chain)
+        if not chain_ok:
+            cert_valid = False
+
+    # Forward Secrecy check — uses Jeevika's key_exchange_mechanism field directly
+    key_exchange = data.get("key_exchange_mechanism", "")
+    forward_secrecy = "ECDHE" in key_exchange or "DHE" in key_exchange
+
     good_tls_versions = ["TLSv1.2", "TLSv1.3"]
 
     risk_score = 0
@@ -97,13 +131,17 @@ for i, data in enumerate(all_sessions):
     else:
         risk_level = "HIGH"
 
-    results.append({
+    result_entry = {
         "session_id": source_file,
         "cert_valid": cert_valid,
         "nist_compliant": nist_compliant,
         "risk_score": risk_score,
-        "risk_level": risk_level
-    })
+        "risk_level": risk_level,
+        "forward_secrecy": forward_secrecy
+    }
+    if chain_reason:
+        result_entry["reason"] = chain_reason
+    results.append(result_entry)
 
 print(json.dumps(results, indent=2))
 
