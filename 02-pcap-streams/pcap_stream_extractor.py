@@ -69,6 +69,7 @@ PORT_MAP = {
     3587: ("SMTP", "plaintext-or-starttls"),  # bad-mail submission
     3993: ("IMAP", "implicit-tls"),           # bad-mail IMAPS
     3143: ("IMAP", "plaintext-or-starttls"),  # bad-mail plaintext IMAP
+    2995: ("POP3", "implicit-tls"),           # good-mail POP3S
 }
 
 STARTTLS_KEYWORDS = {
