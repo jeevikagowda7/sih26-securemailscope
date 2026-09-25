@@ -18,6 +18,20 @@ def describe_public_key(public_key):
     else:
         return type(public_key).__name__, None
 
+TLS_GROUP_NAMES = {
+    "23": "secp256r1 (ECDHE)",
+    "24": "secp384r1 (ECDHE)",
+    "25": "secp521r1 (ECDHE)",
+    "29": "x25519 (ECDHE)",
+    "30": "x448 (ECDHE)",
+    "256": "ffdhe2048 (DHE)",
+    "257": "ffdhe3072 (DHE)",
+    "258": "ffdhe4096 (DHE)",
+    "4588": "X25519MLKEM768 (hybrid post-quantum ECDHE)",
+}
+
+def describe_key_exchange(group_code):
+    return TLS_GROUP_NAMES.get(str(group_code), f"unknown group ({group_code})")
 
 TSHARK_PATH = r'D:\Wireshark\tshark.exe'
 PCAP_DIR = 'pcaps'
@@ -79,6 +93,9 @@ def extract_tls_details(entry, filepath):
             cipher = tls_layer.get_field_value('handshake_ciphersuite')
             if cipher:
                 entry['cipher_suite'] = cipher
+            key_share_group = tls_layer.get_field_value('handshake_extensions_key_share_group')
+            if key_share_group:
+                entry['key_exchange_mechanism'] = describe_key_exchange(key_share_group)
 
             # Handshake type 11 — the actual certificate
             cert_hex = tls_layer.get_field_value('handshake_certificate')
