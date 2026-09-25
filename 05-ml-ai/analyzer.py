@@ -21,7 +21,7 @@ def train_models(df):
     features_df = prepare_features(df)
     X = features_df[FEATURE_COLS]
 
-    iso_model = IsolationForest(contamination=0.5, random_state=42)
+    iso_model = IsolationForest(contamination=0.25, random_state=42)
     iso_model.fit(X)
 
     y = (df["risk_level"] != "LOW").astype(int)
@@ -39,23 +39,21 @@ def train_models(df):
     }
 
 def build_explanation(row):
-    """Turns rule violations into a plain-English explanation."""
+    """Prefer Krithiksha's actual computed reason; fall back to feature-based guess only if she didn't provide one."""
     if row["risk_level"] == "LOW":
         return "No issues detected."
+    if pd.notna(row.get("reason")):
+        return row["reason"]
     issues = []
     if row["credentials_exposed"]:
-        issues.append("Login credentials were sent in plaintext — enforce STARTTLS/TLS before allowing authentication.")
+        issues.append("Login credentials were sent in plaintext.")
     if row["insecure_auth"]:
-        issues.append("Insecure authentication method used (e.g. AUTH PLAIN/LOGIN without encryption).")
+        issues.append("Insecure authentication method used.")
     if not row["starttls_offered"]:
-        issues.append("Server never offered STARTTLS — enable STARTTLS support on the mail server.")
-    if not row["starttls_used"] and row["starttls_offered"]:
-        issues.append("Server offered STARTTLS but client didn't use it — possible downgrade issue.")
-    if row["tls_version"] < 1.2 and row["tls_version"] > 0:
-        issues.append("Outdated TLS version — upgrade to TLS 1.2 or higher.")
+        issues.append("Server never offered STARTTLS.")
     if not row["cert_valid"]:
-        issues.append("Certificate issue detected — renew/reissue from a trusted CA.")
-    return " | ".join(issues) if issues else row.get("reason", "Flagged, reason unclear.")
+        issues.append("Certificate issue detected.")
+    return " | ".join(issues) if issues else "Flagged, reason unclear."
 
 def analyze_connection(session_id, df, models):
     """
@@ -74,11 +72,11 @@ def analyze_connection(session_id, df, models):
 
     rule_risky = row["risk_level"] != "LOW"
     if rule_risky and ai_anomaly:
-        verdict = "HIGH RISK (AI + rules agree)"
+        verdict = f"{row['risk_level']} RISK (AI + rules agree)"
     elif rule_risky:
-        verdict = "MEDIUM RISK (rules flagged, AI didn't)"
+        verdict = f"{row['risk_level']} RISK (rules flagged, AI unsure)"
     elif ai_anomaly:
-        verdict = "WATCH (AI flagged, rules didn't)"
+        verdict = "WATCH (AI flagged, rules found nothing)"
     else:
         verdict = "SAFE"
 
@@ -95,6 +93,6 @@ def analyze_connection(session_id, df, models):
         "risk_level": row["risk_level"],
         "ai_anomaly": bool(ai_anomaly),
         "verdict": verdict,
-        "explanation": build_explanation(features_row),
+        "explanation": build_explanation(row),
         "shap_breakdown": {k: round(float(v), 4) for k, v in shap_breakdown.items()},
     }
