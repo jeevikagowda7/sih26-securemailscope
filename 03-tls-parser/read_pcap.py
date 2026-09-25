@@ -7,6 +7,23 @@ from cryptography.hazmat.backends import default_backend
 
 from cryptography.hazmat.primitives.asymmetric import rsa, ec, dsa
 
+import subprocess
+
+def get_raw_certificate_field(filepath):
+    """pyshark's get_field_value() only returns the FIRST certificate
+    when a handshake message has more than one. Ask tshark directly
+    instead, since its raw field output correctly comma-joins all of them."""
+    try:
+        result = subprocess.run(
+            [TSHARK_PATH, '-r', filepath, '-Y', 'tls.handshake.type==11',
+             '-T', 'fields', '-e', 'tls.handshake.certificate'],
+            capture_output=True, text=True, check=True
+        )
+        lines = result.stdout.strip().splitlines()
+        return lines[0] if lines else None
+    except Exception:
+        return None
+
 def describe_public_key(public_key):
     """Figure out what kind of key this cert uses, and how big it is."""
     if isinstance(public_key, rsa.RSAPublicKey):
@@ -17,6 +34,22 @@ def describe_public_key(public_key):
         return "DSA", public_key.key_size
     else:
         return type(public_key).__name__, None
+
+def describe_cert(cert):
+    """Pull out all the useful info from one certificate object."""
+    now = datetime.datetime.now(datetime.timezone.utc)
+    key_algorithm, key_size = describe_public_key(cert.public_key())
+    return {
+        'subject': cert.subject.rfc4514_string(),
+        'issuer': cert.issuer.rfc4514_string(),
+        'not_before': cert.not_valid_before_utc.isoformat(),
+        'not_after': cert.not_valid_after_utc.isoformat(),
+        'expired': now > cert.not_valid_after_utc,
+        'not_yet_valid': now < cert.not_valid_before_utc,
+        'public_key_algorithm': key_algorithm,
+        'public_key_size_bits': key_size,
+        'signature_algorithm': cert.signature_hash_algorithm.name if cert.signature_hash_algorithm else None,
+    }
 
 TLS_GROUP_NAMES = {
     "23": "secp256r1 (ECDHE)",
@@ -67,6 +100,8 @@ from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 import datetime
 
+
+
 def extract_tls_details(entry, filepath):
     """Open the pcap and pull TLS version/cipher AND certificate details if present."""
     if not os.path.exists(filepath):
@@ -79,6 +114,7 @@ def extract_tls_details(entry, filepath):
         display_filter='tls.handshake.type==1 or tls.handshake.type==2 or tls.handshake.type==11',
         tshark_path=TSHARK_PATH
     )
+    raw_cert_chain_hex = get_raw_certificate_field(filepath)
     found_tls = False
     for packet in cap:
         try:
@@ -98,24 +134,35 @@ def extract_tls_details(entry, filepath):
                 entry['key_exchange_mechanism'] = describe_key_exchange(key_share_group)
 
             # Handshake type 11 — the actual certificate
-            cert_hex = tls_layer.get_field_value('handshake_certificate')
+            cert_hex = raw_cert_chain_hex
             if cert_hex:
                 try:
-                    cert_bytes = bytes.fromhex(cert_hex.replace(':', ''))
-                    cert = x509.load_der_x509_certificate(cert_bytes, default_backend())
+                    chain = []
+                    for hex_piece in cert_hex.split(','):
+                        cert_bytes = bytes.fromhex(hex_piece.replace(':', ''))
+                        cert = x509.load_der_x509_certificate(cert_bytes, default_backend())
+                        chain.append(describe_cert(cert))
 
-                    entry['cert_subject'] = cert.subject.rfc4514_string()
-                    entry['cert_issuer'] = cert.issuer.rfc4514_string()
-                    entry['cert_not_before'] = cert.not_valid_before_utc.isoformat()
-                    entry['cert_not_after'] = cert.not_valid_after_utc.isoformat()
+                    entry['cert_chain'] = chain
+                    entry['chain_length'] = len(chain)
 
-                    now = datetime.datetime.now(datetime.timezone.utc)
-                    entry['cert_expired'] = now > cert.not_valid_after_utc
-                    entry['cert_not_yet_valid'] = now < cert.not_valid_before_utc
-                    key_algorithm, key_size = describe_public_key(cert.public_key())
-                    entry['public_key_algorithm'] = key_algorithm
-                    entry['public_key_size_bits'] = key_size
-                    entry['signature_algorithm'] = cert.signature_hash_algorithm.name if cert.signature_hash_algorithm else None
+                    # Does each cert's issuer match the next one's subject? (basic chain linkage check)
+                    entry['chain_properly_linked'] = all(
+                        chain[i]['issuer'] == chain[i + 1]['subject']
+                        for i in range(len(chain) - 1)
+                    )
+
+                    # Keep the old flat fields too, using the leaf (first) cert, so nothing else breaks.
+                    leaf = chain[0]
+                    entry['cert_subject'] = leaf['subject']
+                    entry['cert_issuer'] = leaf['issuer']
+                    entry['cert_not_before'] = leaf['not_before']
+                    entry['cert_not_after'] = leaf['not_after']
+                    entry['cert_expired'] = leaf['expired']
+                    entry['cert_not_yet_valid'] = leaf['not_yet_valid']
+                    entry['public_key_algorithm'] = leaf['public_key_algorithm']
+                    entry['public_key_size_bits'] = leaf['public_key_size_bits']
+                    entry['signature_algorithm'] = leaf['signature_algorithm']
                     entry['cert_source'] = 'extracted_from_pcap'
                 except Exception as e:
                     entry['cert_parse_error'] = str(e)

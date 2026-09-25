@@ -158,6 +158,51 @@
     "cert_source": "placeholder_matched_expiry_cert"
   },
   {
+    "source_pcap": "good_capture12_certchain.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": true,
+    "tls_version": "0x0303",
+    "encrypted": true,
+    "cipher_suite": "0xc02f",
+    "cert_chain": [
+      {
+        "subject": "CN=mail.good.test",
+        "issuer": "CN=SecureMailScope Intermediate CA",
+        "not_before": "2026-09-25T14:47:57+00:00",
+        "not_after": "2027-09-25T14:47:57+00:00",
+        "expired": false,
+        "not_yet_valid": false,
+        "public_key_algorithm": "RSA",
+        "public_key_size_bits": 2048,
+        "signature_algorithm": "sha256"
+      },
+      {
+        "subject": "CN=SecureMailScope Intermediate CA",
+        "issuer": "CN=SecureMailScope Root CA",
+        "not_before": "2026-09-25T14:47:43+00:00",
+        "not_after": "2031-09-24T14:47:43+00:00",
+        "expired": false,
+        "not_yet_valid": false,
+        "public_key_algorithm": "RSA",
+        "public_key_size_bits": 2048,
+        "signature_algorithm": "sha256"
+      }
+    ],
+    "chain_length": 2,
+    "chain_properly_linked": true,
+    "cert_subject": "CN=mail.good.test",
+    "cert_issuer": "CN=SecureMailScope Intermediate CA",
+    "cert_not_before": "2026-09-25T14:47:57+00:00",
+    "cert_not_after": "2027-09-25T14:47:57+00:00",
+    "cert_expired": false,
+    "cert_not_yet_valid": false,
+    "public_key_algorithm": "RSA",
+    "public_key_size_bits": 2048,
+    "signature_algorithm": "sha256",
+    "cert_source": "extracted_from_pcap"
+  },
+  {
     "source_pcap": "good_capture4_attachment.pcap",
     "src_ip": "127.0.0.1",
     "dst_ip": "127.0.0.1",
