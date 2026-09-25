@@ -65,7 +65,7 @@ if os.path.exists(summaries_path):
             all_results.append(entry)
             print(entry)
 
-# ---- Source 2: individual *_streams.json files (capture4, 5, 6) ----
+# ---- Source 2: individual *_streams.json files (capture4, 5, 6, 7, 8...) ----
 for filename in os.listdir(STREAMS_DIR):
     if not filename.endswith('_streams.json'):
         continue
@@ -82,18 +82,30 @@ for filename in os.listdir(STREAMS_DIR):
             'starttls_seen': stream.get('starttls_seen'),
         }
 
-        # Always verify against the actual pcap ourselves —
-        # don't trust Varshini's tls_client_hello_seen flag blindly,
-        # it was wrong for capture4/capture6 (confirmed by Sumaiya).
-        entry = extract_tls_details(entry, os.path.join(PCAP_DIR, source_pcap))
+        pcap_path = os.path.join(PCAP_DIR, source_pcap)
 
+        if not os.path.exists(pcap_path):
+            # No real pcap available — check if the JSON itself already
+            # has hand-written TLS details (a synthetic test case)
+            if stream.get('tls_version') and stream.get('cipher_suite'):
+                entry['tls_version'] = stream.get('tls_version')
+                entry['cipher_suite'] = stream.get('cipher_suite')
+                entry['encrypted'] = True
+                entry['synthetic'] = True
+                entry['note'] = 'Hand-constructed test case (no real pcap) — not derived from actual packet capture'
+            else:
+                entry['encrypted'] = None
+                entry['note'] = f'pcap file not found: {pcap_path}, and no TLS details in JSON to fall back on'
+            all_results.append(entry)
+            print(entry)
+            continue
+
+        # Real pcap exists — verify against it directly, same as before
+        entry = extract_tls_details(entry, pcap_path)
         if entry.get('encrypted') is False:
             if stream.get('starttls_seen'):
                 entry['note'] = 'STARTTLS requested but no TLS handshake found — downgrade'
             else:
                 entry['note'] = 'No STARTTLS and no TLS handshake — plaintext'
-
         all_results.append(entry)
         print(entry)
-
-print(f"\nDone. Processed {len(all_results)} streams total.")
