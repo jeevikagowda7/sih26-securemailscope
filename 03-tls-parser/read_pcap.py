@@ -1,16 +1,41 @@
 import pyshark
 import json
 import os
+import datetime
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
 
 TSHARK_PATH = r'D:\Wireshark\tshark.exe'
 PCAP_DIR = 'pcaps'
 STREAMS_DIR = '../02-pcap-streams/extracted_streams'
+CERT_PATH = '../01-data-lab/mail.good.test-cert.pem'
 
 all_results = []
 
 
+def load_cert_info():
+    if not os.path.exists(CERT_PATH):
+        return None
+    with open(CERT_PATH, 'rb') as f:
+        cert = x509.load_pem_x509_certificate(f.read(), default_backend())
+    now = datetime.datetime.now(datetime.timezone.utc)
+    return {
+        'cert_subject': cert.subject.rfc4514_string(),
+        'cert_issuer': cert.issuer.rfc4514_string(),
+        'cert_not_before': cert.not_valid_before_utc.isoformat(),
+        'cert_not_after': cert.not_valid_after_utc.isoformat(),
+        'cert_expired': now > cert.not_valid_after_utc,
+        'cert_not_yet_valid': now < cert.not_valid_before_utc,
+    }
+
+GOOD_MAIL_CERT_INFO = load_cert_info()
+
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
+import datetime
+
 def extract_tls_details(entry, filepath):
-    """Open the pcap and pull real TLS version/cipher if a handshake exists."""
+    """Open the pcap and pull TLS version/cipher AND certificate details if present."""
     if not os.path.exists(filepath):
         entry['encrypted'] = None
         entry['note'] = f'pcap file not found: {filepath}'
@@ -18,18 +43,41 @@ def extract_tls_details(entry, filepath):
 
     cap = pyshark.FileCapture(
         filepath,
-        display_filter='tls.handshake.type==1 or tls.handshake.type==2',
+        display_filter='tls.handshake.type==1 or tls.handshake.type==2 or tls.handshake.type==11',
         tshark_path=TSHARK_PATH
     )
     found_tls = False
     for packet in cap:
         try:
             tls_layer = packet.tls
-            entry['tls_version'] = tls_layer.get_field_value('handshake_version')
-            entry['cipher_suite'] = tls_layer.get_field_value('handshake_ciphersuite')
-            entry['encrypted'] = True
-            found_tls = True
-            break
+
+            # Handshake type 1/2 — version and cipher (same as before)
+            version = tls_layer.get_field_value('handshake_version')
+            if version:
+                entry['tls_version'] = version
+                entry['encrypted'] = True
+                found_tls = True
+            cipher = tls_layer.get_field_value('handshake_ciphersuite')
+            if cipher:
+                entry['cipher_suite'] = cipher
+
+            # Handshake type 11 — the actual certificate
+            cert_hex = tls_layer.get_field_value('handshake_certificate')
+            if cert_hex:
+                try:
+                    cert_bytes = bytes.fromhex(cert_hex.replace(':', ''))
+                    cert = x509.load_der_x509_certificate(cert_bytes, default_backend())
+
+                    entry['cert_subject'] = cert.subject.rfc4514_string()
+                    entry['cert_issuer'] = cert.issuer.rfc4514_string()
+                    entry['cert_not_before'] = cert.not_valid_before_utc.isoformat()
+                    entry['cert_not_after'] = cert.not_valid_after_utc.isoformat()
+
+                    now = datetime.datetime.now(datetime.timezone.utc)
+                    entry['cert_expired'] = now > cert.not_valid_after_utc
+                    entry['cert_not_yet_valid'] = now < cert.not_valid_before_utc
+                except Exception as e:
+                    entry['cert_parse_error'] = str(e)
         except AttributeError:
             continue
     cap.close()
@@ -109,3 +157,14 @@ for filename in os.listdir(STREAMS_DIR):
                 entry['note'] = 'No STARTTLS and no TLS handshake — plaintext'
         all_results.append(entry)
         print(entry)
+
+for entry in all_results:
+    source_pcap = entry.get('source_pcap', '')
+    if entry.get('encrypted') and not entry.get('synthetic') and source_pcap.startswith('good_'):
+        if GOOD_MAIL_CERT_INFO:
+            entry.update(GOOD_MAIL_CERT_INFO)
+
+with open('tls_parsed_output.json', 'w') as f:
+    json.dump(all_results, f, indent=2)
+
+print(f"\nDone. Processed {len(all_results)} streams total.")
