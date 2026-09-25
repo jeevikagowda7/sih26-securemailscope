@@ -9,14 +9,14 @@ TSHARK_PATH = r'D:\Wireshark\tshark.exe'
 PCAP_DIR = 'pcaps'
 STREAMS_DIR = '../02-pcap-streams/extracted_streams'
 CERT_PATH = '../01-data-lab/mail.good.test-cert.pem'
-
+EXPIRED_CERT_PATH = '../01-data-lab/expired_cert.pem'
 all_results = []
 
 
-def load_cert_info():
-    if not os.path.exists(CERT_PATH):
+def load_cert_info(path=CERT_PATH):
+    if not os.path.exists(path):
         return None
-    with open(CERT_PATH, 'rb') as f:
+    with open(path, 'rb') as f:
         cert = x509.load_pem_x509_certificate(f.read(), default_backend())
     now = datetime.datetime.now(datetime.timezone.utc)
     return {
@@ -29,6 +29,7 @@ def load_cert_info():
     }
 
 GOOD_MAIL_CERT_INFO = load_cert_info()
+EXPIRED_CERT_INFO = load_cert_info(EXPIRED_CERT_PATH)
 
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
@@ -160,7 +161,10 @@ for filename in os.listdir(STREAMS_DIR):
 
 for entry in all_results:
     source_pcap = entry.get('source_pcap', '')
-    if entry.get('encrypted') and not entry.get('synthetic') and source_pcap.startswith('good_'):
+    if source_pcap == 'good_capture11_expiredcert.pcap':
+        if EXPIRED_CERT_INFO:
+            entry.update(EXPIRED_CERT_INFO)
+    elif entry.get('encrypted') and not entry.get('synthetic') and source_pcap.startswith('good_'):
         if GOOD_MAIL_CERT_INFO:
             entry.update(GOOD_MAIL_CERT_INFO)
 

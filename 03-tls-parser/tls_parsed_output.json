@@ -87,6 +87,52 @@
     "cert_not_yet_valid": false
   },
   {
+    "source_pcap": "bad_capture4_imap.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": false,
+    "encrypted": false,
+    "note": "No STARTTLS and no TLS handshake \u2014 plaintext"
+  },
+  {
+    "source_pcap": "bad_capture5_pop3.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": false,
+    "encrypted": false,
+    "note": "No STARTTLS and no TLS handshake \u2014 plaintext"
+  },
+  {
+    "source_pcap": "good_capture10_pop3.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": false,
+    "tls_version": "0x0303",
+    "encrypted": true,
+    "cipher_suite": "0x1302",
+    "cert_subject": "CN=mail.good.test",
+    "cert_issuer": "CN=mail.good.test",
+    "cert_not_before": "2026-09-22T08:53:51+00:00",
+    "cert_not_after": "2027-09-22T08:53:51+00:00",
+    "cert_expired": false,
+    "cert_not_yet_valid": false
+  },
+  {
+    "source_pcap": "good_capture11_expiredcert.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": true,
+    "tls_version": "0x0303",
+    "encrypted": true,
+    "cipher_suite": "0x1302",
+    "cert_subject": "CN=mail.good.test",
+    "cert_issuer": "CN=mail.good.test",
+    "cert_not_before": "2020-01-01T00:00:00+00:00",
+    "cert_not_after": "2020-01-02T00:00:00+00:00",
+    "cert_expired": true,
+    "cert_not_yet_valid": false
+  },
+  {
     "source_pcap": "good_capture4_attachment.pcap",
     "src_ip": "127.0.0.1",
     "dst_ip": "127.0.0.1",
