@@ -57,7 +57,7 @@
     "risk_score": 100,
     "risk_level": "HIGH",
     "forward_secrecy": false,
-    "reason": "No STARTTLS and no TLS handshake \u2014 plaintext"
+    "reason": "Credentials exposed in plaintext"
   },
   {
     "session_id": "bad_capture5_pop3.pcap",
@@ -66,7 +66,7 @@
     "risk_score": 100,
     "risk_level": "HIGH",
     "forward_secrecy": false,
-    "reason": "No STARTTLS and no TLS handshake \u2014 plaintext"
+    "reason": "Credentials exposed in plaintext"
   },
   {
     "session_id": "good_capture10_pop3.pcap",
