@@ -226,6 +226,7 @@ for filename in os.listdir(STREAMS_DIR):
             'src_ip': stream.get('src_ip'),
             'dst_ip': stream.get('dst_ip'),
             'starttls_seen': stream.get('starttls_seen'),
+            'credentials_exposed': bool(stream.get('credentials_leaked')),
         }
 
         pcap_path = os.path.join(PCAP_DIR, source_pcap)
