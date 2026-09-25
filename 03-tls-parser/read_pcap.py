@@ -64,8 +64,14 @@ TLS_GROUP_NAMES = {
 }
 
 def describe_key_exchange(group_code):
-    return TLS_GROUP_NAMES.get(str(group_code), f"unknown group ({group_code})")
-
+    try:
+        if isinstance(group_code, str) and group_code.lower().startswith('0x'):
+            code_num = int(group_code, 16)
+        else:
+            code_num = int(group_code)
+    except (TypeError, ValueError):
+        return f"unknown group ({group_code})"
+    return TLS_GROUP_NAMES.get(str(code_num), f"unknown group ({code_num})")
 TSHARK_PATH = r'D:\Wireshark\tshark.exe'
 PCAP_DIR = 'pcaps'
 STREAMS_DIR = '../02-pcap-streams/extracted_streams'
@@ -133,6 +139,10 @@ def extract_tls_details(entry, filepath):
             if key_share_group:
                 entry['key_exchange_mechanism'] = describe_key_exchange(key_share_group)
 
+            # TLS 1.2 doesn't have key_share - it uses Server Key Exchange's named curve instead.
+            server_named_curve = tls_layer.get_field_value('handshake_server_named_curve')
+            if server_named_curve:
+                entry['key_exchange_mechanism'] = describe_key_exchange(server_named_curve)
             # Handshake type 11 — the actual certificate
             cert_hex = raw_cert_chain_hex
             if cert_hex:
