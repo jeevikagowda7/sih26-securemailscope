@@ -11,6 +11,7 @@ services:
     environment:
       - PERMIT_DOCKER=network
       - ONE_DIR=1
+      - SSL_TYPE=self-signed
     volumes:
       - ./good-mail-data/mail-data:/var/mail
       - ./good-mail-data/mail-state:/var/mail-state
