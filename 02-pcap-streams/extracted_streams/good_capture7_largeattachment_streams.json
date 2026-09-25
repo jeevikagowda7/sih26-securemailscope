@@ -1,0 +1,20 @@
+[
+  {
+    "stream_id": 0,
+    "source_pcap": "good_capture7_largeattachment.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "src_port": 51280,
+    "dst_port": 2587,
+    "protocol": "SMTP",
+    "expected_security": "plaintext-or-starttls",
+    "packet_count": 106,
+    "first_timestamp": 1790314524.419414,
+    "last_timestamp": 1790314524.607932,
+    "starttls_seen": true,
+    "starttls_packet_number": 9,
+    "tls_client_hello_seen": true,
+    "tls_client_hello_packet_number": 11,
+    "duration_seconds": 0.189
+  }
+]

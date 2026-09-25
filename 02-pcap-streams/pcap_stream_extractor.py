@@ -143,12 +143,21 @@ def extract_streams(pcap_path):
     # (Jeevika) knows exactly which recording each stream came from.
     source_pcap = os.path.basename(pcap_path)
 
-    # On some computers Wireshark/tshark gets installed to a non-standard
-    # folder, so pyshark can't find it automatically. If we spot that
-    # exact case, point straight at it. On any other computer (where
-    # Wireshark is in the normal location) this is simply ignored.
-    CUSTOM_TSHARK_PATH = r"C:\Users\sumai\Sih26\Wireshark\tshark.exe"
-    tshark_path = CUSTOM_TSHARK_PATH if os.path.exists(CUSTOM_TSHARK_PATH) else None
+    # On some team laptops, Wireshark/tshark got installed to a
+    # non-standard folder, so pyshark can't find it automatically. We
+    # check every known custom location here; the first one that
+    # actually exists on this computer is used. On a computer where
+    # Wireshark is in the normal location, none of these match and
+    # tshark_path stays None, which just means "use pyshark's default
+    # search" (Program Files, etc).
+    KNOWN_CUSTOM_TSHARK_PATHS = [
+        r"C:\Users\sumai\Sih26\Wireshark\tshark.exe",              # Sumaiya's laptop
+        r"C:\Users\varsh\OneDrive\Documents\Wireshark\tshark.exe",  # Varshini's laptop
+    ]
+    tshark_path = next(
+        (path for path in KNOWN_CUSTOM_TSHARK_PATHS if os.path.exists(path)),
+        None,
+    )
 
     # Builds "tcp.port==25 or tcp.port==587 or ..." automatically from
     # every port in PORT_MAP above, so this list never goes out of sync
