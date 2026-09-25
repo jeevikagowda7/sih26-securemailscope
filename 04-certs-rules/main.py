@@ -66,12 +66,11 @@ for i, data in enumerate(all_sessions):
         or any(keyword in cipher_code for keyword in weak_cipher_keywords)
     )
 
-    # REAL certificate validity check now, using Jeevika's actual cert fields
+    # REAL certificate validity check, using Jeevika's actual cert fields
     cert_expired = data.get("cert_expired", None)
     cert_not_yet_valid = data.get("cert_not_yet_valid", None)
 
     if cert_expired is None:
-        # No certificate data available for this session at all
         cert_valid = False
     else:
         cert_valid = (not cert_expired) and (not cert_not_yet_valid)
@@ -86,11 +85,14 @@ for i, data in enumerate(all_sessions):
     if is_weak_cipher:
         risk_score += 40
 
+    # Cap the score at 100 so it always reads like a percentage
+    risk_score = min(risk_score, 100)
+
     nist_compliant = cert_valid and (tls_version in good_tls_versions) and (not is_weak_cipher)
 
     if risk_score == 0:
         risk_level = "LOW"
-    elif risk_score <= 40:
+    elif risk_score <= 50:
         risk_level = "MEDIUM"
     else:
         risk_level = "HIGH"
