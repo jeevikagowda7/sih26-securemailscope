@@ -14,7 +14,10 @@ Your job (02-pcap-streams) is to be the "sorting" step:
      (SMTP / IMAP / POP3, based on the port number).
   4. Check whether that conversation used STARTTLS (i.e. it started
      in plain text and then said "ok, let's switch to encrypted now").
-  5. Save a clean, organized JSON summary of each stream.
+  5. If a conversation NEVER encrypted at all, check whether we can
+     see a plaintext login (IMAP LOGIN, or POP3 USER/PASS) sitting in
+     the open - that's the "leaked credentials" proof for the demo.
+  6. Save a clean, organized JSON summary of each stream.
 
 Someone else on the team (Jeevika, 03-tls-parser) will take YOUR
 JSON output and dig deeper into the actual TLS handshake details.
@@ -43,10 +46,6 @@ except ImportError:
     sys.exit(1)
 
 # --- Fix for newer Python versions (3.12+) ---
-# pyshark internally expects a "current event loop" to already exist in
-# this thread. Newer Python versions stopped setting that up
-# automatically, so we create one by hand before pyshark needs it.
-# Needed on computers running a newer Python (like Sumaiya's, on 3.14).
 try:
     asyncio.get_event_loop()
 except RuntimeError:
@@ -54,25 +53,15 @@ except RuntimeError:
 # ----------------------------------------------
 
 
-# ---------------------------------------------------------------
-# STEP 1: Which ports mean which protocol?
-# Think of a port number like an apartment number in a building.
-# The IP address is the building, the port tells you which "door"
-# the traffic is knocking on.
-# ---------------------------------------------------------------
 PORT_MAP = {
-    # Standard ports
     25: ("SMTP", "plaintext-or-starttls"),
-    587: ("SMTP", "plaintext-or-starttls"),   # submission port, usually STARTTLS
-    465: ("SMTP", "implicit-tls"),            # SMTPS, TLS from the start
+    587: ("SMTP", "plaintext-or-starttls"),
+    465: ("SMTP", "implicit-tls"),
     143: ("IMAP", "plaintext-or-starttls"),
-    993: ("IMAP", "implicit-tls"),            # IMAPS
+    993: ("IMAP", "implicit-tls"),
     110: ("POP3", "plaintext-or-starttls"),
-    995: ("POP3", "implicit-tls"),            # POP3S
+    995: ("POP3", "implicit-tls"),
 
-    # Our team's docker-mailserver test ports (good-mail / bad-mail
-    # containers use these instead of the standard ports above - see
-    # Sumaiya's 01-data-lab setup notes).
     2525: ("SMTP", "plaintext-or-starttls"),  # good-mail SMTP
     2587: ("SMTP", "plaintext-or-starttls"),  # good-mail submission
     2993: ("IMAP", "implicit-tls"),           # good-mail IMAPS
@@ -80,18 +69,28 @@ PORT_MAP = {
     3587: ("SMTP", "plaintext-or-starttls"),  # bad-mail submission
     3993: ("IMAP", "implicit-tls"),           # bad-mail IMAPS
     3143: ("IMAP", "plaintext-or-starttls"),  # bad-mail plaintext IMAP
+    2995: ("POP3", "implicit-tls"),           # good-mail POP3S
+    3110: ("POP3", "plaintext-or-starttls"),  # bad-mail plaintext POP3
 }
 
-# Commands that signal "we are about to upgrade to TLS"
 STARTTLS_KEYWORDS = {
     "SMTP": [b"STARTTLS"],
     "IMAP": [b"STARTTLS", b"a1 STARTTLS", b"a STARTTLS"],
     "POP3": [b"STLS"],
 }
 
+# Plaintext IMAP LOGIN command: "a1 LOGIN myuser mypassword" (one line).
+IMAP_LOGIN_PATTERN = re.compile(
+    rb'\bLOGIN\s+"?([^"\s]+)"?\s+"?([^"\s]+)"?', re.IGNORECASE
+)
+
+# NEW: plaintext POP3 login commands. Unlike IMAP, these come as two
+# separate lines:  "USER bob"  then  "PASS mypassword"
+POP3_USER_PATTERN = re.compile(rb'^\s*USER\s+(\S+)', re.IGNORECASE)
+POP3_PASS_PATTERN = re.compile(rb'^\s*PASS\s+(\S+)', re.IGNORECASE)
+
 
 def identify_protocol(src_port, dst_port):
-    """Look at both ports, return protocol info if either one matches."""
     for port in (src_port, dst_port):
         if port in PORT_MAP:
             return PORT_MAP[port]
@@ -99,26 +98,11 @@ def identify_protocol(src_port, dst_port):
 
 
 def parse_timestamp(ts_str):
-    """
-    Turn pkt.sniff_timestamp into a plain number of seconds, whichever
-    format it comes in.
-
-    Older tshark gives something like "1758537...123456" (a plain
-    number already). Newer tshark (e.g. 4.6.8, seen on Sumaiya's
-    laptop) instead gives a text date like
-    "2026-09-22T10:08:00.631283360Z" - this crashed the old code,
-    which just tried float() on it directly. This function handles
-    both, so it works regardless of which tshark version is installed.
-    """
     try:
         return float(ts_str)
     except ValueError:
         pass
 
-    # Text-date format. Python's datetime can only handle up to
-    # microseconds (6 digits) in the fractional-seconds part, but
-    # tshark sometimes gives nanoseconds (9 digits), so trim that down
-    # first.
     match = re.match(r"^(.*T\d{2}:\d{2}:\d{2})\.(\d+)(Z|[+-]\d{2}:\d{2})$", ts_str)
     if match:
         base, frac, tz = match.groups()
@@ -131,40 +115,19 @@ def parse_timestamp(ts_str):
 
 
 def extract_streams(pcap_path):
-    """
-    STEP 2: Group packets by "conversation".
-    pyshark can tell us the tcp.stream number directly - Wireshark
-    already does the hard work of figuring out which packets belong
-    to which conversation. We just collect them.
-    """
     print(f"Opening {pcap_path} ... this can take a bit for large files.")
 
-    # Just the filename (e.g. "good_capture1.pcap"), not the whole path -
-    # this goes into every stream entry so whoever reads the JSON later
-    # (Jeevika) knows exactly which recording each stream came from.
     source_pcap = os.path.basename(pcap_path)
 
-    # On some team laptops, Wireshark/tshark got installed to a
-    # non-standard folder, so pyshark can't find it automatically. We
-    # check every known custom location here; the first one that
-    # actually exists on this computer is used. On a computer where
-    # Wireshark is in the normal location, none of these match and
-    # tshark_path stays None, which just means "use pyshark's default
-    # search" (Program Files, etc).
     KNOWN_CUSTOM_TSHARK_PATHS = [
-        r"C:\Users\sumai\Sih26\Wireshark\tshark.exe",              # Sumaiya's laptop
-        r"C:\Users\varsh\OneDrive\Documents\Wireshark\tshark.exe",  # Varshini's laptop
+        r"C:\Users\sumai\Sih26\Wireshark\tshark.exe",
+        r"C:\Users\varsh\OneDrive\Documents\Wireshark\tshark.exe",
     ]
     tshark_path = next(
         (path for path in KNOWN_CUSTOM_TSHARK_PATHS if os.path.exists(path)),
         None,
     )
 
-    # Builds "tcp.port==25 or tcp.port==587 or ..." automatically from
-    # every port in PORT_MAP above, so this list never goes out of sync
-    # with it again (this is what caused the "0 streams found" bug -
-    # this filter only listed the standard ports, so it silently threw
-    # away all the packets on our team's actual docker-mailserver ports).
     port_filter = " or ".join(f"tcp.port=={port}" for port in PORT_MAP)
 
     cap = pyshark.FileCapture(
@@ -183,7 +146,7 @@ def extract_streams(pcap_path):
         "src_port": None,
         "dst_port": None,
         "protocol": None,
-        "expected_security": None,   # "plaintext-or-starttls" or "implicit-tls"
+        "expected_security": None,
         "packet_count": 0,
         "first_timestamp": None,
         "last_timestamp": None,
@@ -191,13 +154,16 @@ def extract_streams(pcap_path):
         "starttls_packet_number": None,
         "tls_client_hello_seen": False,
         "tls_client_hello_packet_number": None,
+        "credentials_leaked": False,
+        "leaked_username": None,
+        "leaked_password": None,
     })
 
     for pkt in cap:
         try:
             stream_id = int(pkt.tcp.stream)
         except AttributeError:
-            continue  # not a TCP packet somehow, skip
+            continue
 
         s = streams[stream_id]
         s["stream_id"] = stream_id
@@ -223,8 +189,6 @@ def extract_streams(pcap_path):
             s["src_port"] = src_port
             s["dst_port"] = dst_port
 
-        # STEP 3: Check for STARTTLS in plaintext commands.
-        # We look inside the raw TCP payload bytes for known keywords.
         if hasattr(pkt, "data") and hasattr(pkt.data, "data"):
             try:
                 raw_bytes = bytes.fromhex(pkt.data.data.replace(":", ""))
@@ -238,22 +202,28 @@ def extract_streams(pcap_path):
                         s["starttls_packet_number"] = int(pkt.number)
                         break
 
-        # STEP 4: Check whether this packet is a TLS Client Hello.
-        # That tells us "ok, encryption actually started here".
-        #
-        # NOTE: We used to check pkt.tls.handshake_type == "1" here, but
-        # on newer tshark versions (e.g. 4.6.8) that field isn't exposed
-        # the same way anymore - pyshark just doesn't see it, even on a
-        # real Client Hello packet. (Bug found by Jeevika/Sumaiya on
-        # good_capture4 and good_capture6, confirmed via direct tshark
-        # inspection - tshark itself saw the Client Hello fine, but our
-        # script's specific field lookup was silently missing it.)
-        #
-        # Fix: instead of hunting for that one field, we use a simpler,
-        # more reliable rule - the FIRST packet in a stream that has any
-        # TLS data at all is, in practice, always the Client Hello (it's
-        # the opening move of a TLS handshake, nothing TLS-related comes
-        # before it). So we just mark the first one we see per stream.
+            # Plaintext IMAP LOGIN credential check.
+            if raw_bytes and s["protocol"] == "IMAP" and not s["credentials_leaked"]:
+                match = IMAP_LOGIN_PATTERN.search(raw_bytes)
+                if match:
+                    s["credentials_leaked"] = True
+                    s["leaked_username"] = match.group(1).decode(errors="replace")
+                    s["leaked_password"] = match.group(2).decode(errors="replace")
+
+            # NEW: Plaintext POP3 USER/PASS credential check.
+            # First packet gives the username, a later packet gives the
+            # password - we remember the username until the password
+            # shows up, then mark it leaked.
+            if raw_bytes and s["protocol"] == "POP3" and not s["credentials_leaked"]:
+                user_match = POP3_USER_PATTERN.match(raw_bytes)
+                if user_match:
+                    s["leaked_username"] = user_match.group(1).decode(errors="replace")
+                else:
+                    pass_match = POP3_PASS_PATTERN.match(raw_bytes)
+                    if pass_match and s["leaked_username"]:
+                        s["leaked_password"] = pass_match.group(1).decode(errors="replace")
+                        s["credentials_leaked"] = True
+
         if hasattr(pkt, "tls") and not s["tls_client_hello_seen"]:
             s["tls_client_hello_seen"] = True
             s["tls_client_hello_packet_number"] = int(pkt.number)
@@ -263,15 +233,10 @@ def extract_streams(pcap_path):
 
 
 def save_results(streams, output_path):
-    """
-    STEP 5: Save as clean JSON.
-    This is the file Jeevika (TLS parser) and the rules-engine
-    person (Krithiksha) will read next.
-    """
     result = []
     for stream_id, data in sorted(streams.items()):
         if data["protocol"] is None:
-            continue  # not an email protocol stream, skip it
+            continue
         data["duration_seconds"] = round(
             (data["last_timestamp"] - data["first_timestamp"]), 3
         ) if data["first_timestamp"] and data["last_timestamp"] else 0
@@ -294,10 +259,6 @@ def main():
         print(f"File not found: {pcap_path}")
         sys.exit(1)
 
-    # Always save the output JSON into the extracted_streams folder,
-    # next to this script - not next to whatever pcap file was given -
-    # so every result lands in one predictable place (02-pcap-streams\
-    # extracted_streams) regardless of where the input pcap lives.
     script_dir = os.path.dirname(os.path.abspath(__file__))
     output_dir = os.path.join(script_dir, "extracted_streams")
     os.makedirs(output_dir, exist_ok=True)
