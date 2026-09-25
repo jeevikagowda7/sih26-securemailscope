@@ -41,8 +41,14 @@
     "insecure_auth": false,
     "credentials_exposed": false,
     "tls_version": "0x0303",
+    "encrypted": true,
     "cipher_suite": "0x1302",
-    "encrypted": true
+    "cert_subject": "CN=mail.good.test",
+    "cert_issuer": "CN=mail.good.test",
+    "cert_not_before": "2026-09-22T08:53:51+00:00",
+    "cert_not_after": "2027-09-22T08:53:51+00:00",
+    "cert_expired": false,
+    "cert_not_yet_valid": false
   },
   {
     "source_pcap": "good_capture2.pcap",
@@ -53,8 +59,14 @@
     "insecure_auth": false,
     "credentials_exposed": false,
     "tls_version": "0x0303",
+    "encrypted": true,
     "cipher_suite": "0x1302",
-    "encrypted": true
+    "cert_subject": "CN=mail.good.test",
+    "cert_issuer": "CN=mail.good.test",
+    "cert_not_before": "2026-09-22T08:53:51+00:00",
+    "cert_not_after": "2027-09-22T08:53:51+00:00",
+    "cert_expired": false,
+    "cert_not_yet_valid": false
   },
   {
     "source_pcap": "good_capture3.pcap",
@@ -65,8 +77,14 @@
     "insecure_auth": false,
     "credentials_exposed": false,
     "tls_version": "0x0303",
+    "encrypted": true,
     "cipher_suite": "0x1302",
-    "encrypted": true
+    "cert_subject": "CN=mail.good.test",
+    "cert_issuer": "CN=mail.good.test",
+    "cert_not_before": "2026-09-22T08:53:51+00:00",
+    "cert_not_after": "2027-09-22T08:53:51+00:00",
+    "cert_expired": false,
+    "cert_not_yet_valid": false
   },
   {
     "source_pcap": "good_capture4_attachment.pcap",
@@ -74,8 +92,14 @@
     "dst_ip": "127.0.0.1",
     "starttls_seen": true,
     "tls_version": "0x0303",
+    "encrypted": true,
     "cipher_suite": "0x1302",
-    "encrypted": true
+    "cert_subject": "CN=mail.good.test",
+    "cert_issuer": "CN=mail.good.test",
+    "cert_not_before": "2026-09-22T08:53:51+00:00",
+    "cert_not_after": "2027-09-22T08:53:51+00:00",
+    "cert_expired": false,
+    "cert_not_yet_valid": false
   },
   {
     "source_pcap": "good_capture5_downgrade.pcap",
@@ -91,8 +115,14 @@
     "dst_ip": "127.0.0.1",
     "starttls_seen": true,
     "tls_version": "0x0303",
+    "encrypted": true,
     "cipher_suite": "0x1302",
-    "encrypted": true
+    "cert_subject": "CN=mail.good.test",
+    "cert_issuer": "CN=mail.good.test",
+    "cert_not_before": "2026-09-22T08:53:51+00:00",
+    "cert_not_after": "2027-09-22T08:53:51+00:00",
+    "cert_expired": false,
+    "cert_not_yet_valid": false
   },
   {
     "source_pcap": "good_capture7_largeattachment.pcap",
@@ -100,8 +130,14 @@
     "dst_ip": "127.0.0.1",
     "starttls_seen": true,
     "tls_version": "0x0303",
+    "encrypted": true,
     "cipher_suite": "0x1302",
-    "encrypted": true
+    "cert_subject": "CN=mail.good.test",
+    "cert_issuer": "CN=mail.good.test",
+    "cert_not_before": "2026-09-22T08:53:51+00:00",
+    "cert_not_after": "2027-09-22T08:53:51+00:00",
+    "cert_expired": false,
+    "cert_not_yet_valid": false
   },
   {
     "source_pcap": "good_capture8_weaktls.pcap",
@@ -113,5 +149,20 @@
     "encrypted": true,
     "synthetic": true,
     "note": "Hand-constructed test case (no real pcap) \u2014 not derived from actual packet capture"
+  },
+  {
+    "source_pcap": "good_capture9_imap.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": false,
+    "tls_version": "0x0303",
+    "encrypted": true,
+    "cipher_suite": "0x1302",
+    "cert_subject": "CN=mail.good.test",
+    "cert_issuer": "CN=mail.good.test",
+    "cert_not_before": "2026-09-22T08:53:51+00:00",
+    "cert_not_after": "2027-09-22T08:53:51+00:00",
+    "cert_expired": false,
+    "cert_not_yet_valid": false
   }
 ]
