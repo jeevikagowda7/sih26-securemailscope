@@ -1,0 +1,22 @@
+{
+  "streams": [
+    {
+      "stream_file": "stream_01_127.0.0.1_3587-127.0.0.1_35974.txt",
+      "endpoint_a": "127.0.0.1:3587",
+      "endpoint_b": "127.0.0.1:35974",
+      "segment_count": 19,
+      "signals": {
+        "auth_login_or_plain_used": true,
+        "starttls_offered_by_server": false,
+        "starttls_used_by_client": false,
+        "decoded_credentials": {
+          "username": "bob@bad.test",
+          "password": "yourNewPassword123"
+        },
+        "attachments": [],
+        "insecure_auth": true
+      }
+    }
+  ],
+  "packet_count": 29
+}

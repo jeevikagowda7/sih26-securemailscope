@@ -5,7 +5,7 @@
     "nist_compliant": false,
     "risk_score": 100,
     "risk_level": "HIGH",
-    "reason": "No TLS handshake detected \u2014 likely plaintext/unencrypted traffic"
+    "reason": "Credentials exposed in plaintext"
   },
   {
     "session_id": "bad_capture2.pcap",
@@ -13,7 +13,7 @@
     "nist_compliant": false,
     "risk_score": 100,
     "risk_level": "HIGH",
-    "reason": "No TLS handshake detected \u2014 likely plaintext/unencrypted traffic"
+    "reason": "Credentials exposed in plaintext"
   },
   {
     "session_id": "bad_capture3.pcap",
@@ -21,14 +21,7 @@
     "nist_compliant": false,
     "risk_score": 100,
     "risk_level": "HIGH",
-    "reason": "No TLS handshake detected \u2014 likely plaintext/unencrypted traffic"
-  },
-  {
-    "session_id": "good_capture1.pcap",
-    "cert_valid": true,
-    "nist_compliant": true,
-    "risk_score": 0,
-    "risk_level": "LOW"
+    "reason": "Credentials exposed in plaintext"
   },
   {
     "session_id": "good_capture1.pcap",
@@ -45,35 +38,7 @@
     "risk_level": "LOW"
   },
   {
-    "session_id": "good_capture2.pcap",
-    "cert_valid": true,
-    "nist_compliant": true,
-    "risk_score": 0,
-    "risk_level": "LOW"
-  },
-  {
     "session_id": "good_capture3.pcap",
-    "cert_valid": true,
-    "nist_compliant": true,
-    "risk_score": 0,
-    "risk_level": "LOW"
-  },
-  {
-    "session_id": "good_capture3.pcap",
-    "cert_valid": true,
-    "nist_compliant": true,
-    "risk_score": 0,
-    "risk_level": "LOW"
-  },
-  {
-    "session_id": "good_v2.pcap",
-    "cert_valid": true,
-    "nist_compliant": true,
-    "risk_score": 0,
-    "risk_level": "LOW"
-  },
-  {
-    "session_id": "good_v2.pcap",
     "cert_valid": true,
     "nist_compliant": true,
     "risk_score": 0,

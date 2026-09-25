@@ -1,132 +1,98 @@
 [
   {
-    "source_file": "bad_capture1.pcap",
-    "label": "bad",
-    "src_ip": null,
-    "dst_ip": null,
-    "tls_version": null,
-    "cipher_suite": null,
+    "source_pcap": "bad_capture1.pcap",
+    "endpoint_a": "127.0.0.1:3587",
+    "endpoint_b": "127.0.0.1:38796",
+    "starttls_offered_by_server": false,
+    "starttls_used_by_client": false,
+    "insecure_auth": true,
+    "credentials_exposed": true,
     "encrypted": false,
-    "note": "No TLS handshake detected \u2014 likely plaintext/unencrypted traffic"
+    "note": "No STARTTLS used \u2014 plaintext session"
   },
   {
-    "source_file": "bad_capture2.pcap",
-    "label": "bad",
-    "src_ip": null,
-    "dst_ip": null,
-    "tls_version": null,
-    "cipher_suite": null,
+    "source_pcap": "bad_capture2.pcap",
+    "endpoint_a": "127.0.0.1:3587",
+    "endpoint_b": "127.0.0.1:42286",
+    "starttls_offered_by_server": false,
+    "starttls_used_by_client": false,
+    "insecure_auth": true,
+    "credentials_exposed": true,
     "encrypted": false,
-    "note": "No TLS handshake detected \u2014 likely plaintext/unencrypted traffic"
+    "note": "No STARTTLS used \u2014 plaintext session"
   },
   {
-    "source_file": "bad_capture3.pcap",
-    "label": "bad",
-    "src_ip": null,
-    "dst_ip": null,
-    "tls_version": null,
-    "cipher_suite": null,
+    "source_pcap": "bad_capture3.pcap",
+    "endpoint_a": "127.0.0.1:3587",
+    "endpoint_b": "127.0.0.1:35974",
+    "starttls_offered_by_server": false,
+    "starttls_used_by_client": false,
+    "insecure_auth": true,
+    "credentials_exposed": true,
     "encrypted": false,
-    "note": "No TLS handshake detected \u2014 likely plaintext/unencrypted traffic"
+    "note": "No STARTTLS used \u2014 plaintext session"
   },
   {
-    "source_file": "good_capture1.pcap",
-    "label": "good",
-    "src_ip": "127.0.0.1",
-    "dst_ip": "127.0.0.1",
+    "source_pcap": "good_capture1.pcap",
+    "endpoint_a": "127.0.0.1:2587",
+    "endpoint_b": "127.0.0.1:36492",
+    "starttls_offered_by_server": true,
+    "starttls_used_by_client": true,
+    "insecure_auth": false,
+    "credentials_exposed": false,
     "tls_version": "0x0303",
     "cipher_suite": "0x1302",
     "encrypted": true
   },
   {
-    "source_file": "good_capture1.pcap",
-    "label": "good",
-    "src_ip": "127.0.0.1",
-    "dst_ip": "127.0.0.1",
+    "source_pcap": "good_capture2.pcap",
+    "endpoint_a": "127.0.0.1:2587",
+    "endpoint_b": "127.0.0.1:38616",
+    "starttls_offered_by_server": true,
+    "starttls_used_by_client": true,
+    "insecure_auth": false,
+    "credentials_exposed": false,
     "tls_version": "0x0303",
     "cipher_suite": "0x1302",
     "encrypted": true
   },
   {
-    "source_file": "good_capture2.pcap",
-    "label": "good",
-    "src_ip": "127.0.0.1",
-    "dst_ip": "127.0.0.1",
+    "source_pcap": "good_capture3.pcap",
+    "endpoint_a": "127.0.0.1:2587",
+    "endpoint_b": "127.0.0.1:42754",
+    "starttls_offered_by_server": true,
+    "starttls_used_by_client": true,
+    "insecure_auth": false,
+    "credentials_exposed": false,
     "tls_version": "0x0303",
     "cipher_suite": "0x1302",
     "encrypted": true
   },
   {
-    "source_file": "good_capture2.pcap",
-    "label": "good",
+    "source_pcap": "good_capture4_attachment.pcap",
     "src_ip": "127.0.0.1",
     "dst_ip": "127.0.0.1",
-    "tls_version": "0x0303",
-    "cipher_suite": "0x1302",
-    "encrypted": true
-  },
-  {
-    "source_file": "good_capture3.pcap",
-    "label": "good",
-    "src_ip": "127.0.0.1",
-    "dst_ip": "127.0.0.1",
-    "tls_version": "0x0303",
-    "cipher_suite": "0x1302",
-    "encrypted": true
-  },
-  {
-    "source_file": "good_capture3.pcap",
-    "label": "good",
-    "src_ip": "127.0.0.1",
-    "dst_ip": "127.0.0.1",
-    "tls_version": "0x0303",
-    "cipher_suite": "0x1302",
-    "encrypted": true
-  },
-  {
-    "source_file": "good_capture4_attachment.pcap",
-    "label": "good",
-    "src_ip": "127.0.0.1",
-    "dst_ip": "127.0.0.1",
-    "tls_version": "0x0303",
-    "cipher_suite": "0x1302",
-    "encrypted": true
-  },
-  {
-    "source_file": "good_capture4_attachment.pcap",
-    "label": "good",
-    "src_ip": "127.0.0.1",
-    "dst_ip": "127.0.0.1",
-    "tls_version": "0x0303",
-    "cipher_suite": "0x1302",
-    "encrypted": true
-  },
-  {
-    "source_file": "good_capture5_downgrade.pcap",
-    "label": "good",
-    "src_ip": null,
-    "dst_ip": null,
-    "tls_version": null,
-    "cipher_suite": null,
+    "starttls_seen": true,
+    "tls_client_hello_seen": false,
     "encrypted": false,
-    "note": "No TLS handshake detected \u2014 likely plaintext/unencrypted traffic"
+    "note": "STARTTLS requested but handshake never completed \u2014 downgrade"
   },
   {
-    "source_file": "good_v2.pcap",
-    "label": "good",
+    "source_pcap": "good_capture5_downgrade.pcap",
     "src_ip": "127.0.0.1",
     "dst_ip": "127.0.0.1",
-    "tls_version": "0x0303",
-    "cipher_suite": "0x1302",
-    "encrypted": true
+    "starttls_seen": true,
+    "tls_client_hello_seen": false,
+    "encrypted": false,
+    "note": "STARTTLS requested but handshake never completed \u2014 downgrade"
   },
   {
-    "source_file": "good_v2.pcap",
-    "label": "good",
+    "source_pcap": "good_capture6_multirecipient.pcap",
     "src_ip": "127.0.0.1",
     "dst_ip": "127.0.0.1",
-    "tls_version": "0x0303",
-    "cipher_suite": "0x1302",
-    "encrypted": true
+    "starttls_seen": true,
+    "tls_client_hello_seen": false,
+    "encrypted": false,
+    "note": "STARTTLS requested but handshake never completed \u2014 downgrade"
   }
 ]

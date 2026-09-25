@@ -1,0 +1,19 @@
+{
+  "streams": [
+    {
+      "stream_file": "stream_01_127.0.0.1_2587-127.0.0.1_42754.txt",
+      "endpoint_a": "127.0.0.1:2587",
+      "endpoint_b": "127.0.0.1:42754",
+      "segment_count": 28,
+      "signals": {
+        "auth_login_or_plain_used": false,
+        "starttls_offered_by_server": true,
+        "starttls_used_by_client": true,
+        "decoded_credentials": {},
+        "attachments": [],
+        "insecure_auth": false
+      }
+    }
+  ],
+  "packet_count": 37
+}

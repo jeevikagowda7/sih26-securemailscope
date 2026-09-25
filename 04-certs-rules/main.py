@@ -15,10 +15,34 @@ weak_cipher_codes = ["0x0004", "0x0005"]
 results = []
 
 for i, data in enumerate(all_sessions):
-    source_file = data.get("source_file", f"session_{i}")
+    source_file = data.get("source_pcap", f"session_{i}")
     encrypted = data.get("encrypted", False)
+    credentials_exposed = data.get("credentials_exposed", False)
+    insecure_auth = data.get("insecure_auth", False)
 
-    # If no encryption/handshake happened at all, that's an automatic HIGH risk
+    # Highest priority checks first — these alone force HIGH risk
+    if credentials_exposed:
+        results.append({
+            "session_id": source_file,
+            "cert_valid": False,
+            "nist_compliant": False,
+            "risk_score": 100,
+            "risk_level": "HIGH",
+            "reason": "Credentials exposed in plaintext"
+        })
+        continue
+
+    if insecure_auth:
+        results.append({
+            "session_id": source_file,
+            "cert_valid": False,
+            "nist_compliant": False,
+            "risk_score": 100,
+            "risk_level": "HIGH",
+            "reason": "Insecure authentication method used"
+        })
+        continue
+
     if not encrypted:
         results.append({
             "session_id": source_file,
@@ -36,9 +60,7 @@ for i, data in enumerate(all_sessions):
     cipher_code = data.get("cipher_suite", "")
     is_weak_cipher = cipher_code in weak_cipher_codes
 
-    # certificate_presented still doesn't exist — assuming True when encrypted
     cert_valid = True
-
     good_tls_versions = ["TLSv1.2", "TLSv1.3"]
 
     risk_score = 0

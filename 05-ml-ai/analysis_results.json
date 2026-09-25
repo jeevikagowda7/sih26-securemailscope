@@ -1,0 +1,110 @@
+[
+  {
+    "session_id": "bad_capture1.pcap",
+    "risk_score": 100,
+    "risk_level": "HIGH",
+    "ai_anomaly": false,
+    "verdict": "MEDIUM RISK (rules flagged, AI didn't)",
+    "explanation": "Login credentials were sent in plaintext \u2014 enforce STARTTLS/TLS before allowing authentication. | Insecure authentication method used (e.g. AUTH PLAIN/LOGIN without encryption). | Server never offered STARTTLS \u2014 enable STARTTLS support on the mail server. | Certificate issue detected \u2014 renew/reissue from a trusted CA.",
+    "shap_breakdown": {
+      "starttls_used": 0.0983,
+      "insecure_auth": 0.09,
+      "tls_version": 0.08,
+      "credentials_exposed": 0.07,
+      "starttls_offered": 0.0633,
+      "cert_valid": 0.0617,
+      "encrypted": 0.0267,
+      "weak_cipher": 0.0
+    }
+  },
+  {
+    "session_id": "bad_capture2.pcap",
+    "risk_score": 100,
+    "risk_level": "HIGH",
+    "ai_anomaly": false,
+    "verdict": "MEDIUM RISK (rules flagged, AI didn't)",
+    "explanation": "Login credentials were sent in plaintext \u2014 enforce STARTTLS/TLS before allowing authentication. | Insecure authentication method used (e.g. AUTH PLAIN/LOGIN without encryption). | Server never offered STARTTLS \u2014 enable STARTTLS support on the mail server. | Certificate issue detected \u2014 renew/reissue from a trusted CA.",
+    "shap_breakdown": {
+      "starttls_used": 0.0983,
+      "insecure_auth": 0.09,
+      "tls_version": 0.08,
+      "credentials_exposed": 0.07,
+      "starttls_offered": 0.0633,
+      "cert_valid": 0.0617,
+      "encrypted": 0.0267,
+      "weak_cipher": 0.0
+    }
+  },
+  {
+    "session_id": "bad_capture3.pcap",
+    "risk_score": 100,
+    "risk_level": "HIGH",
+    "ai_anomaly": false,
+    "verdict": "MEDIUM RISK (rules flagged, AI didn't)",
+    "explanation": "Login credentials were sent in plaintext \u2014 enforce STARTTLS/TLS before allowing authentication. | Insecure authentication method used (e.g. AUTH PLAIN/LOGIN without encryption). | Server never offered STARTTLS \u2014 enable STARTTLS support on the mail server. | Certificate issue detected \u2014 renew/reissue from a trusted CA.",
+    "shap_breakdown": {
+      "starttls_used": 0.0983,
+      "insecure_auth": 0.09,
+      "tls_version": 0.08,
+      "credentials_exposed": 0.07,
+      "starttls_offered": 0.0633,
+      "cert_valid": 0.0617,
+      "encrypted": 0.0267,
+      "weak_cipher": 0.0
+    }
+  },
+  {
+    "session_id": "good_capture1.pcap",
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "ai_anomaly": false,
+    "verdict": "SAFE",
+    "explanation": "No issues detected.",
+    "shap_breakdown": {
+      "weak_cipher": 0.0,
+      "cert_valid": -0.0383,
+      "encrypted": -0.0433,
+      "starttls_offered": -0.0667,
+      "tls_version": -0.07,
+      "credentials_exposed": -0.08,
+      "insecure_auth": -0.08,
+      "starttls_used": -0.1117
+    }
+  },
+  {
+    "session_id": "good_capture2.pcap",
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "ai_anomaly": false,
+    "verdict": "SAFE",
+    "explanation": "No issues detected.",
+    "shap_breakdown": {
+      "weak_cipher": 0.0,
+      "cert_valid": -0.0383,
+      "encrypted": -0.0433,
+      "starttls_offered": -0.0667,
+      "tls_version": -0.07,
+      "credentials_exposed": -0.08,
+      "insecure_auth": -0.08,
+      "starttls_used": -0.1117
+    }
+  },
+  {
+    "session_id": "good_capture3.pcap",
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "ai_anomaly": false,
+    "verdict": "SAFE",
+    "explanation": "No issues detected.",
+    "shap_breakdown": {
+      "weak_cipher": 0.0,
+      "cert_valid": -0.0383,
+      "encrypted": -0.0433,
+      "starttls_offered": -0.0667,
+      "tls_version": -0.07,
+      "credentials_exposed": -0.08,
+      "insecure_auth": -0.08,
+      "starttls_used": -0.1117
+    }
+  }
+]
