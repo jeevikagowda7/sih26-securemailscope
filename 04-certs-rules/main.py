@@ -11,6 +11,7 @@ tls_version_map = {
 }
 
 weak_cipher_codes = ["0x0004", "0x0005"]
+weak_cipher_keywords = ["3DES", "RC4", "DES", "MD5", "NULL", "EXPORT"]
 
 results = []
 
@@ -54,13 +55,27 @@ for i, data in enumerate(all_sessions):
         })
         continue
 
-    tls_code = data.get("tls_version", "")
-    tls_version = tls_version_map.get(tls_code, "UNKNOWN")
+    # Handle tls_version whether it's a hex code ("0x0303") or already a name ("TLSv1.0")
+    tls_raw = data.get("tls_version", "")
+    tls_version = tls_version_map.get(tls_raw, tls_raw)
 
+    # Handle cipher_suite whether it's a hex code or a readable cipher name
     cipher_code = data.get("cipher_suite", "")
-    is_weak_cipher = cipher_code in weak_cipher_codes
+    is_weak_cipher = (
+        cipher_code in weak_cipher_codes
+        or any(keyword in cipher_code for keyword in weak_cipher_keywords)
+    )
 
-    cert_valid = True
+    # REAL certificate validity check now, using Jeevika's actual cert fields
+    cert_expired = data.get("cert_expired", None)
+    cert_not_yet_valid = data.get("cert_not_yet_valid", None)
+
+    if cert_expired is None:
+        # No certificate data available for this session at all
+        cert_valid = False
+    else:
+        cert_valid = (not cert_expired) and (not cert_not_yet_valid)
+
     good_tls_versions = ["TLSv1.2", "TLSv1.3"]
 
     risk_score = 0

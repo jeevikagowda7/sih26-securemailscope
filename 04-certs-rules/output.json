@@ -46,11 +46,10 @@
   },
   {
     "session_id": "good_capture4_attachment.pcap",
-    "cert_valid": false,
-    "nist_compliant": false,
-    "risk_score": 100,
-    "risk_level": "HIGH",
-    "reason": "STARTTLS requested but handshake never completed \u2014 downgrade"
+    "cert_valid": true,
+    "nist_compliant": true,
+    "risk_score": 0,
+    "risk_level": "LOW"
   },
   {
     "session_id": "good_capture5_downgrade.pcap",
@@ -58,14 +57,34 @@
     "nist_compliant": false,
     "risk_score": 100,
     "risk_level": "HIGH",
-    "reason": "STARTTLS requested but handshake never completed \u2014 downgrade"
+    "reason": "STARTTLS requested but no TLS handshake found \u2014 downgrade"
   },
   {
     "session_id": "good_capture6_multirecipient.pcap",
+    "cert_valid": true,
+    "nist_compliant": true,
+    "risk_score": 0,
+    "risk_level": "LOW"
+  },
+  {
+    "session_id": "good_capture7_largeattachment.pcap",
+    "cert_valid": true,
+    "nist_compliant": true,
+    "risk_score": 0,
+    "risk_level": "LOW"
+  },
+  {
+    "session_id": "good_capture8_weaktls.pcap",
     "cert_valid": false,
     "nist_compliant": false,
-    "risk_score": 100,
-    "risk_level": "HIGH",
-    "reason": "STARTTLS requested but handshake never completed \u2014 downgrade"
+    "risk_score": 120,
+    "risk_level": "HIGH"
+  },
+  {
+    "session_id": "good_capture9_imap.pcap",
+    "cert_valid": true,
+    "nist_compliant": true,
+    "risk_score": 0,
+    "risk_level": "LOW"
   }
 ]
