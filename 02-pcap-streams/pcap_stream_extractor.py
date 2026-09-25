@@ -122,6 +122,7 @@ def extract_streams(pcap_path):
     KNOWN_CUSTOM_TSHARK_PATHS = [
         r"C:\Users\sumai\Sih26\Wireshark\tshark.exe",
         r"C:\Users\varsh\OneDrive\Documents\Wireshark\tshark.exe",
+        r"D:\Wireshark\tshark.exe",
     ]
     tshark_path = next(
         (path for path in KNOWN_CUSTOM_TSHARK_PATHS if os.path.exists(path)),
