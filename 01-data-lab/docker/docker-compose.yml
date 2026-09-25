@@ -8,10 +8,13 @@ services:
       - "2525:25"
       - "2587:587"
       - "2993:993"
+      - "2995:995"
+      - "2110:110"
     environment:
       - PERMIT_DOCKER=network
       - ONE_DIR=1
       - SSL_TYPE=self-signed
+      - ENABLE_POP3=1
     volumes:
       - ./good-mail-data/mail-data:/var/mail
       - ./good-mail-data/mail-state:/var/mail-state
@@ -30,9 +33,12 @@ services:
       - "3587:587"
       - "3993:993"
       - "3143:143"
+      - "3995:995"
+      - "3110:110"
     environment:
       - PERMIT_DOCKER=network
       - ONE_DIR=1
+      - ENABLE_POP3=1
     volumes:
       - ./bad-mail-data/mail-data:/var/mail
       - ./bad-mail-data/mail-state:/var/mail-state
@@ -40,3 +46,4 @@ services:
       - ./bad-mail-data/config:/tmp/docker-mailserver
     cap_add:
       - NET_ADMIN
+ 
