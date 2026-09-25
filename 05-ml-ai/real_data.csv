@@ -5,10 +5,13 @@ bad_capture3.pcap,0.0,False,False,False,True,True,False,False,100,HIGH,Credentia
 good_capture1.pcap,1.2,False,True,True,False,False,True,True,0,LOW,
 good_capture2.pcap,1.2,False,True,True,False,False,True,True,0,LOW,
 good_capture3.pcap,1.2,False,True,True,False,False,True,True,0,LOW,
-bad_capture4_imap.pcap,0.0,False,False,False,False,False,False,False,100,HIGH,No STARTTLS and no TLS handshake — plaintext
-bad_capture5_pop3.pcap,0.0,False,False,False,False,False,False,False,100,HIGH,No STARTTLS and no TLS handshake — plaintext
+bad_capture4_imap.pcap,0.0,False,False,False,False,True,False,False,100,HIGH,Credentials exposed in plaintext
+bad_capture5_pop3.pcap,0.0,False,False,False,False,True,False,False,100,HIGH,Credentials exposed in plaintext
 good_capture10_pop3.pcap,1.2,False,False,False,False,False,True,True,0,LOW,
 good_capture11_expiredcert.pcap,1.2,False,False,False,False,False,True,False,50,MEDIUM,
+good_capture12_certchain.pcap,1.2,False,False,False,False,False,True,True,0,LOW,
+good_capture13_tls12valid.pcap,1.2,False,False,False,False,False,True,True,0,LOW,
+good_capture14_tls12expired.pcap,1.2,False,False,False,False,False,True,False,50,MEDIUM,Chain contains expired certificate: CN=mail.good.test
 good_capture4_attachment.pcap,1.2,False,False,False,False,False,True,True,0,LOW,
 good_capture5_downgrade.pcap,0.0,False,False,False,False,False,False,False,100,HIGH,STARTTLS requested but no TLS handshake found — downgrade
 good_capture6_multirecipient.pcap,1.2,False,False,False,False,False,True,True,0,LOW,

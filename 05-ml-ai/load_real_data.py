@@ -10,7 +10,7 @@ with open("../04-certs-rules/output.json") as f:
 tls_version_map = {
     "0x0301": 1.0, "0x0302": 1.1, "0x0303": 1.2, "0x0304": 1.3
 }
-weak_cipher_codes = ["0x0004", "0x0005"]
+weak_cipher_codes = ["0x0004", "0x0005", "0x000a", "0x002f", "0x0035"]
 
 rows = []
 for entry in parsed:
