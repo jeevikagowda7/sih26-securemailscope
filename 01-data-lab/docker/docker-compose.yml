@@ -29,6 +29,7 @@ services:
       - "3525:25"
       - "3587:587"
       - "3993:993"
+      - "3143:143"
     environment:
       - PERMIT_DOCKER=network
       - ONE_DIR=1
