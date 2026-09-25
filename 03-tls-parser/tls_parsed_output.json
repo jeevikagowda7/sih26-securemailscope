@@ -73,26 +73,45 @@
     "src_ip": "127.0.0.1",
     "dst_ip": "127.0.0.1",
     "starttls_seen": true,
-    "tls_client_hello_seen": false,
-    "encrypted": false,
-    "note": "STARTTLS requested but handshake never completed \u2014 downgrade"
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302",
+    "encrypted": true
   },
   {
     "source_pcap": "good_capture5_downgrade.pcap",
     "src_ip": "127.0.0.1",
     "dst_ip": "127.0.0.1",
     "starttls_seen": true,
-    "tls_client_hello_seen": false,
     "encrypted": false,
-    "note": "STARTTLS requested but handshake never completed \u2014 downgrade"
+    "note": "STARTTLS requested but no TLS handshake found \u2014 downgrade"
   },
   {
     "source_pcap": "good_capture6_multirecipient.pcap",
     "src_ip": "127.0.0.1",
     "dst_ip": "127.0.0.1",
     "starttls_seen": true,
-    "tls_client_hello_seen": false,
-    "encrypted": false,
-    "note": "STARTTLS requested but handshake never completed \u2014 downgrade"
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302",
+    "encrypted": true
+  },
+  {
+    "source_pcap": "good_capture7_largeattachment.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": true,
+    "tls_version": "0x0303",
+    "cipher_suite": "0x1302",
+    "encrypted": true
+  },
+  {
+    "source_pcap": "good_capture8_weaktls.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "starttls_seen": true,
+    "tls_version": "TLSv1.0",
+    "cipher_suite": "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+    "encrypted": true,
+    "synthetic": true,
+    "note": "Hand-constructed test case (no real pcap) \u2014 not derived from actual packet capture"
   }
 ]
