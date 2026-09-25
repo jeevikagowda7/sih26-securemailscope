@@ -1,0 +1,23 @@
+[
+  {
+    "stream_id": 0,
+    "source_pcap": "good_capture13_tls12valid.pcap",
+    "src_ip": "127.0.0.1",
+    "dst_ip": "127.0.0.1",
+    "src_port": 35942,
+    "dst_port": 2587,
+    "protocol": "SMTP",
+    "expected_security": "plaintext-or-starttls",
+    "packet_count": 37,
+    "first_timestamp": 1790350648.089329,
+    "last_timestamp": 1790350648.243787,
+    "starttls_seen": true,
+    "starttls_packet_number": 9,
+    "tls_client_hello_seen": true,
+    "tls_client_hello_packet_number": 11,
+    "credentials_leaked": false,
+    "leaked_username": null,
+    "leaked_password": null,
+    "duration_seconds": 0.154
+  }
+]
