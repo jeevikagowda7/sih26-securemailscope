@@ -48,7 +48,11 @@
     "cert_not_before": "2026-09-22T08:53:51+00:00",
     "cert_not_after": "2027-09-22T08:53:51+00:00",
     "cert_expired": false,
-    "cert_not_yet_valid": false
+    "cert_not_yet_valid": false,
+    "public_key_algorithm": "RSA",
+    "public_key_size_bits": 2048,
+    "signature_algorithm": "sha256",
+    "cert_source": "placeholder_generic_cert"
   },
   {
     "source_pcap": "good_capture2.pcap",
@@ -66,7 +70,11 @@
     "cert_not_before": "2026-09-22T08:53:51+00:00",
     "cert_not_after": "2027-09-22T08:53:51+00:00",
     "cert_expired": false,
-    "cert_not_yet_valid": false
+    "cert_not_yet_valid": false,
+    "public_key_algorithm": "RSA",
+    "public_key_size_bits": 2048,
+    "signature_algorithm": "sha256",
+    "cert_source": "placeholder_generic_cert"
   },
   {
     "source_pcap": "good_capture3.pcap",
@@ -84,7 +92,11 @@
     "cert_not_before": "2026-09-22T08:53:51+00:00",
     "cert_not_after": "2027-09-22T08:53:51+00:00",
     "cert_expired": false,
-    "cert_not_yet_valid": false
+    "cert_not_yet_valid": false,
+    "public_key_algorithm": "RSA",
+    "public_key_size_bits": 2048,
+    "signature_algorithm": "sha256",
+    "cert_source": "placeholder_generic_cert"
   },
   {
     "source_pcap": "bad_capture4_imap.pcap",
@@ -115,7 +127,11 @@
     "cert_not_before": "2026-09-22T08:53:51+00:00",
     "cert_not_after": "2027-09-22T08:53:51+00:00",
     "cert_expired": false,
-    "cert_not_yet_valid": false
+    "cert_not_yet_valid": false,
+    "public_key_algorithm": "RSA",
+    "public_key_size_bits": 2048,
+    "signature_algorithm": "sha256",
+    "cert_source": "placeholder_generic_cert"
   },
   {
     "source_pcap": "good_capture11_expiredcert.pcap",
@@ -130,7 +146,11 @@
     "cert_not_before": "2020-01-01T00:00:00+00:00",
     "cert_not_after": "2020-01-02T00:00:00+00:00",
     "cert_expired": true,
-    "cert_not_yet_valid": false
+    "cert_not_yet_valid": false,
+    "public_key_algorithm": "RSA",
+    "public_key_size_bits": 2048,
+    "signature_algorithm": "sha256",
+    "cert_source": "placeholder_matched_expiry_cert"
   },
   {
     "source_pcap": "good_capture4_attachment.pcap",
@@ -145,7 +165,11 @@
     "cert_not_before": "2026-09-22T08:53:51+00:00",
     "cert_not_after": "2027-09-22T08:53:51+00:00",
     "cert_expired": false,
-    "cert_not_yet_valid": false
+    "cert_not_yet_valid": false,
+    "public_key_algorithm": "RSA",
+    "public_key_size_bits": 2048,
+    "signature_algorithm": "sha256",
+    "cert_source": "placeholder_generic_cert"
   },
   {
     "source_pcap": "good_capture5_downgrade.pcap",
@@ -168,7 +192,11 @@
     "cert_not_before": "2026-09-22T08:53:51+00:00",
     "cert_not_after": "2027-09-22T08:53:51+00:00",
     "cert_expired": false,
-    "cert_not_yet_valid": false
+    "cert_not_yet_valid": false,
+    "public_key_algorithm": "RSA",
+    "public_key_size_bits": 2048,
+    "signature_algorithm": "sha256",
+    "cert_source": "placeholder_generic_cert"
   },
   {
     "source_pcap": "good_capture7_largeattachment.pcap",
@@ -183,7 +211,11 @@
     "cert_not_before": "2026-09-22T08:53:51+00:00",
     "cert_not_after": "2027-09-22T08:53:51+00:00",
     "cert_expired": false,
-    "cert_not_yet_valid": false
+    "cert_not_yet_valid": false,
+    "public_key_algorithm": "RSA",
+    "public_key_size_bits": 2048,
+    "signature_algorithm": "sha256",
+    "cert_source": "placeholder_generic_cert"
   },
   {
     "source_pcap": "good_capture8_weaktls.pcap",
@@ -209,6 +241,10 @@
     "cert_not_before": "2026-09-22T08:53:51+00:00",
     "cert_not_after": "2027-09-22T08:53:51+00:00",
     "cert_expired": false,
-    "cert_not_yet_valid": false
+    "cert_not_yet_valid": false,
+    "public_key_algorithm": "RSA",
+    "public_key_size_bits": 2048,
+    "signature_algorithm": "sha256",
+    "cert_source": "placeholder_generic_cert"
   }
 ]

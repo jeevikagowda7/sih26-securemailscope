@@ -5,6 +5,20 @@ import datetime
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 
+from cryptography.hazmat.primitives.asymmetric import rsa, ec, dsa
+
+def describe_public_key(public_key):
+    """Figure out what kind of key this cert uses, and how big it is."""
+    if isinstance(public_key, rsa.RSAPublicKey):
+        return "RSA", public_key.key_size
+    elif isinstance(public_key, ec.EllipticCurvePublicKey):
+        return f"EC ({public_key.curve.name})", public_key.key_size
+    elif isinstance(public_key, dsa.DSAPublicKey):
+        return "DSA", public_key.key_size
+    else:
+        return type(public_key).__name__, None
+
+
 TSHARK_PATH = r'D:\Wireshark\tshark.exe'
 PCAP_DIR = 'pcaps'
 STREAMS_DIR = '../02-pcap-streams/extracted_streams'
@@ -19,6 +33,7 @@ def load_cert_info(path=CERT_PATH):
     with open(path, 'rb') as f:
         cert = x509.load_pem_x509_certificate(f.read(), default_backend())
     now = datetime.datetime.now(datetime.timezone.utc)
+    key_algorithm, key_size = describe_public_key(cert.public_key())
     return {
         'cert_subject': cert.subject.rfc4514_string(),
         'cert_issuer': cert.issuer.rfc4514_string(),
@@ -26,6 +41,9 @@ def load_cert_info(path=CERT_PATH):
         'cert_not_after': cert.not_valid_after_utc.isoformat(),
         'cert_expired': now > cert.not_valid_after_utc,
         'cert_not_yet_valid': now < cert.not_valid_before_utc,
+        'public_key_algorithm': key_algorithm,
+        'public_key_size_bits': key_size,
+        'signature_algorithm': cert.signature_hash_algorithm.name if cert.signature_hash_algorithm else None,
     }
 
 GOOD_MAIL_CERT_INFO = load_cert_info()
@@ -77,6 +95,11 @@ def extract_tls_details(entry, filepath):
                     now = datetime.datetime.now(datetime.timezone.utc)
                     entry['cert_expired'] = now > cert.not_valid_after_utc
                     entry['cert_not_yet_valid'] = now < cert.not_valid_before_utc
+                    key_algorithm, key_size = describe_public_key(cert.public_key())
+                    entry['public_key_algorithm'] = key_algorithm
+                    entry['public_key_size_bits'] = key_size
+                    entry['signature_algorithm'] = cert.signature_hash_algorithm.name if cert.signature_hash_algorithm else None
+                    entry['cert_source'] = 'extracted_from_pcap'
                 except Exception as e:
                     entry['cert_parse_error'] = str(e)
         except AttributeError:
@@ -161,13 +184,16 @@ for filename in os.listdir(STREAMS_DIR):
 
 for entry in all_results:
     source_pcap = entry.get('source_pcap', '')
-    if source_pcap == 'good_capture11_expiredcert.pcap':
+    if entry.get('cert_source') == 'extracted_from_pcap':
+        pass  # real cert already read directly from this pcap, keep as-is
+    elif source_pcap == 'good_capture11_expiredcert.pcap':
         if EXPIRED_CERT_INFO:
             entry.update(EXPIRED_CERT_INFO)
+            entry['cert_source'] = 'placeholder_matched_expiry_cert'
     elif entry.get('encrypted') and not entry.get('synthetic') and source_pcap.startswith('good_'):
         if GOOD_MAIL_CERT_INFO:
             entry.update(GOOD_MAIL_CERT_INFO)
-
+            entry['cert_source'] = 'placeholder_generic_cert'
 with open('tls_parsed_output.json', 'w') as f:
     json.dump(all_results, f, indent=2)
 
