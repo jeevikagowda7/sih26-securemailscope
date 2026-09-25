@@ -200,7 +200,8 @@
     "public_key_algorithm": "RSA",
     "public_key_size_bits": 2048,
     "signature_algorithm": "sha256",
-    "cert_source": "extracted_from_pcap"
+    "cert_source": "extracted_from_pcap",
+    "key_exchange_mechanism": "x25519 (ECDHE)"
   },
   {
     "source_pcap": "good_capture13_tls12valid.pcap",
@@ -245,7 +246,8 @@
     "public_key_algorithm": "RSA",
     "public_key_size_bits": 2048,
     "signature_algorithm": "sha256",
-    "cert_source": "extracted_from_pcap"
+    "cert_source": "extracted_from_pcap",
+    "key_exchange_mechanism": "x25519 (ECDHE)"
   },
   {
     "source_pcap": "good_capture14_tls12expired.pcap",
@@ -279,7 +281,8 @@
     "public_key_algorithm": "RSA",
     "public_key_size_bits": 2048,
     "signature_algorithm": "sha256",
-    "cert_source": "extracted_from_pcap"
+    "cert_source": "extracted_from_pcap",
+    "key_exchange_mechanism": "x25519 (ECDHE)"
   },
   {
     "source_pcap": "good_capture4_attachment.pcap",
