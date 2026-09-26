@@ -24,7 +24,10 @@ Give it a PCAP file. It gives back a **risk score with a plain-English reason** 
 PCAP → Stream extraction → TLS parser → Certificate rules → AI risk engine → API → Dashboard
 
 ## Screenshots
-![Dashboard](08-reports-docs/screenshots/dashboard.png)
+![Overview](08-reports-docs/screenshots/dashboard-1.png)
+![Risk score](08-reports-docs/screenshots/dashboard-2.png)
+![Evidence](08-reports-docs/screenshots/dashboard-3.png)
+![Raw data](08-reports-docs/screenshots/dashboard-4.png)
 
 ## How to run
 Start the API:
