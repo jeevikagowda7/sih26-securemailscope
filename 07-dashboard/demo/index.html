@@ -115,6 +115,36 @@ tr:hover td{background:#F8FAFD}
   .grid2,.cards{grid-template-columns:1fr}
   .btn.top{display:none}
 }
+
+/* ---------- PDF report (only visible when printing) ---------- */
+#report{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  html,body{background:#fff!important}
+  .bg,header,main,.foot{display:none!important}
+  #report{display:block!important;color:#131C2E;font-family:'Inter',system-ui,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #report h1{font-family:'Oswald',sans-serif;font-size:30pt;line-height:1.05;margin:.2em 0 .1em}
+  #report h1 .grad{background:none;color:#2563EB;-webkit-text-fill-color:#2563EB}
+  #report .meta{font-family:'IBM Plex Mono',monospace;font-size:8.5pt;color:#5B6478;letter-spacing:.06em}
+  #report .rule{height:3px;background:linear-gradient(90deg,#2563EB,#06B6D4);margin:10pt 0 14pt;border-radius:2px}
+  #report h2{font-family:'Oswald',sans-serif;font-size:13pt;letter-spacing:.08em;text-transform:uppercase;margin:16pt 0 6pt;color:#2563EB}
+  #report .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8pt}
+  #report .kpi{border:1px solid #E2E7F0;border-left:4px solid var(--c);border-radius:6pt;padding:7pt 9pt;break-inside:avoid}
+  #report .kpi .k{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:#5B6478}
+  #report .kpi .v{font-family:'Oswald',sans-serif;font-size:22pt;font-weight:700;color:var(--c);line-height:1.1}
+  #report ul{margin:4pt 0 0;padding-left:14pt;font-size:10pt;line-height:1.55}
+  #report table{width:100%;border-collapse:collapse;font-size:8pt;font-family:'IBM Plex Mono',monospace}
+  #report thead{display:table-header-group}
+  #report tr{break-inside:avoid}
+  #report th{background:#F1F4FA;color:#2563EB;text-align:left;padding:5pt 6pt;border-bottom:1px solid #C9D3E6}
+  #report td,#report th{white-space:normal!important;word-break:break-word}
+  #report td{padding:4.5pt 6pt;border-bottom:1px solid #E2E7F0;vertical-align:top}
+  #report td:nth-child(2),#report td:nth-child(3),#report td:nth-child(4),#report td:nth-child(5),#report td:nth-child(6),#report td:nth-child(7),#report th:nth-child(2),#report th:nth-child(3),#report th:nth-child(4),#report th:nth-child(5),#report th:nth-child(6),#report th:nth-child(7){white-space:nowrap!important;word-break:normal!important}
+  #report th:nth-child(1){width:27%}
+  #report .tag{display:inline-block;font-weight:600;font-size:7pt;letter-spacing:.08em;padding:1.5pt 5pt;border:1px solid var(--c);color:var(--c);border-radius:3pt}
+  #report .small{font-size:8pt;color:#5B6478;margin-top:14pt}
+}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -139,7 +169,7 @@ tr:hover td{background:#F8FAFD}
       <button data-page="evidence">Evidence</button>
       <button data-page="reports">Reports</button>
     </nav>
-    <button class="btn top" id="top-dl">Export case file</button>
+    <button class="btn top" id="top-dl">Download PDF report</button>
   </div>
 </header>
 
@@ -149,7 +179,7 @@ tr:hover td{background:#F8FAFD}
       <span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="#2563EB"/></svg> Network forensics · Email security · PS 159</span>
       <h1>Uncovering hidden<br>threats in your<br><span class="grad">mail servers</span></h1>
       <p class="lede">Read real SMTP, IMAP and POP3 packet captures, check the encryption and certificates, and flag weak spots before they reach the inbox. Every case below comes from a capture.</p>
-      <div class="cta"><button class="btn" id="go-evidence">Open evidence</button><button class="btn ghost" id="go-reports">View raw data</button></div>
+      <div class="cta"><button class="btn" id="go-evidence">Open evidence</button><button class="btn ghost" id="go-reports">View raw data</button><button class="btn ghost" id="pdf-hero">Download PDF report</button></div>
     </div>
 
     <div class="tiles" id="tiles"></div>
@@ -188,12 +218,13 @@ tr:hover td{background:#F8FAFD}
       <p class="lede mono" id="rawcount" style="font-size:.9rem"></p>
     </div>
     <div class="tablewrap"><table id="tbl"></table></div>
-    <button class="btn ghost" id="dl-csv">Download CSV</button>
+    <button class="btn ghost" id="dl-csv">Download CSV</button> <button class="btn" id="pdf-rep">Download PDF report</button>
   </section>
 
   <div class="foot">Snapshot of real_data.csv · the data is built into this page and does not update on its own.</div>
 </main>
 
+<div id="report" aria-hidden="true"></div>
 <script>
 const DATA = [
  {
@@ -574,7 +605,7 @@ function download(name,text,mime){
   a.download=name; document.body.appendChild(a); a.click(); a.remove();
 }
 const dlJson=()=>download('securemailscope_report.json',JSON.stringify(rows.filter(r=>active.has(r.risk_level)),null,2),'application/json');
-$('#dl-json').onclick=dlJson; $('#top-dl').onclick=dlJson;
+$('#dl-json').onclick=dlJson;
 
 /* reports */
 const cols=Object.keys(DATA[0]);
@@ -585,6 +616,44 @@ $('#dl-csv').onclick=()=>{
   const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
   download('real_data.csv',cols.join(',')+'\n'+DATA.map(r=>cols.map(c=>q(r[c])).join(',')).join('\n'),'text/csv');
 };
+
+/* ---------- PDF report ---------- */
+function buildReport(){
+  const d=new Date().toLocaleString('en-IN',{dateStyle:'long',timeStyle:'short'});
+  const kpi=(k,v,c)=>`<div class="kpi" style="--c:${c}"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  const encN=DATA.filter(r=>r.encrypted).length;
+  const credN=DATA.filter(r=>r.credentials_exposed).length;
+  const certN=DATA.filter(r=>r.encrypted&&!r.cert_valid).length;
+  const dgN=DATA.filter(r=>/downgrade/i.test(r.reason)).length;
+  const trs=rows.map(r=>{const c=COLOR[r.risk_level];const why=whyText(r);
+    return `<tr><td>${esc(r.session_id)}</td><td>${protoOf(r.session_id)}</td><td>${esc(tlsLabel(r).replace('TLS (old, version not recorded)','TLS (old)'))}</td>
+      <td>${r.encrypted?'yes':'no'}</td><td>${r.credentials_exposed?'yes':'no'}</td>
+      <td>${r.cert_valid?'yes':(r.encrypted?'no':'n/a')}</td>
+      <td><span class="tag" style="--c:${c}">${STAMP[r.risk_level]} ${r.risk_score}</span></td><td>${esc(why)}</td></tr>`}).join('');
+  $('#report').innerHTML=`
+    <div class="meta">SECUREMAILSCOPE · SIH'26 · PS 159 (SIH26159) · GENERATED ${esc(d)}</div>
+    <h1>Mail server security <span class="grad">forensic report</span></h1>
+    <div class="rule"></div>
+    <div class="kpis">${kpi('Sessions investigated',DATA.length,'#131C2E')}${kpi('Vulnerable',count('HIGH'),COLOR.HIGH)}${kpi('Flagged',count('MEDIUM'),COLOR.MEDIUM)}${kpi('Secure',count('LOW'),COLOR.LOW)}</div>
+    <h2>Key findings</h2>
+    <ul>
+      <li>${encN} of ${DATA.length} sessions were encrypted; ${DATA.length-encN} were plaintext.</li>
+      <li>${credN} sessions exposed login credentials in plaintext.</li>
+      <li>${certN} encrypted sessions had a certificate that failed validation.</li>
+      <li>${dgN} session showed a STARTTLS downgrade (encryption requested but never started).</li>
+    </ul>
+    <h2>Session details</h2>
+    <table><thead><tr><th>Session</th><th>Proto</th><th>TLS</th><th>Enc.</th><th>Creds</th><th>Cert</th><th>Verdict</th><th>Reason</th></tr></thead><tbody>${trs}</tbody></table>
+    <div class="small">Method: passive analysis of packet captures (PCAP) of SMTP, IMAP and POP3 traffic. Source: real_data.csv snapshot built into this page.</div>`;
+}
+function exportPdf(){
+  buildReport();
+  const old=document.title; document.title='SecureMailScope_Report';
+  const restore=()=>{document.title=old; window.removeEventListener('afterprint',restore)};
+  window.addEventListener('afterprint',restore);
+  window.print();
+}
+$('#top-dl').onclick=exportPdf; $('#pdf-hero').onclick=exportPdf; $('#pdf-rep').onclick=exportPdf;
 </script>
 </body>
 </html>
