@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from data_loader import load_all
 
-app = FastAPI(title="SecureMailScope API", version="0.2.0")
+app = FastAPI(title="SecureMailScope API", version="0.3.0")
 
 # Permission slip so a dashboard on another address can call this API
 app.add_middleware(
@@ -14,6 +14,13 @@ app.add_middleware(
 )
 
 
+def _is_synthetic(s):
+    """True only if a teammate's file says this capture is hand-made test data."""
+    return any(t.get("synthetic") is True for t in s["tls"]) or any(
+        st.get("synthetic") is True for st in s["streams"]
+    )
+
+
 def _short(s):
     """A small summary of one capture, for lists."""
     rules = s["rules"] or {}
@@ -22,6 +29,7 @@ def _short(s):
     stream = s["streams"][0] if s["streams"] else {}
     return {
         "session_id": s["session_id"],
+        "synthetic": _is_synthetic(s),
         "complete": s["complete"],
         "stages_present": s["stages_present"],
         "protocol": stream.get("protocol"),
@@ -38,7 +46,11 @@ def health():
 
 
 @app.get("/sessions")
-def list_sessions(risk_level: str | None = None, complete: bool | None = None):
+def list_sessions(
+    risk_level: str | None = None,
+    complete: bool | None = None,
+    synthetic: bool | None = None,
+):
     sessions, warnings = load_all()
     rows = [_short(s) for s in sessions.values()]
 
@@ -46,6 +58,8 @@ def list_sessions(risk_level: str | None = None, complete: bool | None = None):
         rows = [r for r in rows if r["risk_level"] == risk_level.upper()]
     if complete is not None:
         rows = [r for r in rows if r["complete"] == complete]
+    if synthetic is not None:
+        rows = [r for r in rows if r["synthetic"] == synthetic]
 
     rows.sort(key=lambda r: r["session_id"])
     return {"count": len(rows), "sessions": rows, "warnings": warnings}
@@ -56,7 +70,9 @@ def get_session(session_id: str):
     sessions, warnings = load_all()
     if session_id not in sessions:
         raise HTTPException(status_code=404, detail=f"No capture named {session_id}")
-    return {"session": sessions[session_id], "warnings": warnings}
+    session = sessions[session_id]
+    session["synthetic"] = _is_synthetic(session)
+    return {"session": session, "warnings": warnings}
 
 
 @app.get("/summary")
@@ -83,11 +99,15 @@ def summary():
         ),
         key=lambda x: x["session_id"],
     )
+    synthetic_names = sorted(
+        s["session_id"] for s in sessions.values() if _is_synthetic(s)
+    )
 
     return {
         "total_captures": len(sessions),
         "complete_captures": sum(1 for s in sessions.values() if s["complete"]),
         "incomplete_captures": incomplete,
+        "synthetic_captures": synthetic_names,
         "by_risk_level": by_level,
         "average_risk_score": round(sum(scores) / len(scores), 1) if scores else None,
         "encrypted_sessions": sum(1 for t in tls_rows if t.get("encrypted") is True),
