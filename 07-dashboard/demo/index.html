@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SecureMailScope — Forensics Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F7FB; --card:#FFFFFF; --ink:#131C2E; --sub:#5B6478; --line:#E2E7F0;
+  --blue:#2563EB; --cyan:#06B6D4; --green:#16A34A; --amber:#D97706; --red:#DC2626;
+  --tint-blue:#E8EFFD;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;min-height:100vh;position:relative;overflow-x:hidden}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+
+/* ---------- backdrop ---------- */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  background:
+    radial-gradient(ellipse 700px 420px at 0% 15%, rgba(37,99,235,.10), transparent 65%),
+    radial-gradient(ellipse 600px 400px at 100% 60%, rgba(6,182,212,.08), transparent 65%),
+    repeating-linear-gradient(0deg, rgba(19,28,46,.035) 0 1px, transparent 1px 84px),
+    repeating-linear-gradient(90deg, rgba(19,28,46,.035) 0 1px, transparent 1px 84px);}
+.bg svg{position:absolute;inset:0;width:100%;height:100%}
+.hexcol{position:absolute;top:0;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:22px;letter-spacing:.2em;
+  color:rgba(19,28,46,.10);writing-mode:vertical-rl;white-space:nowrap}
+
+/* ---------- top nav ---------- */
+header{position:sticky;top:0;z-index:20;background:rgba(245,247,251,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{max-width:1240px;margin:0 auto;padding:.85rem 1.6rem;display:flex;align-items:center;gap:1.5rem}
+.logo{display:flex;align-items:center;gap:.8rem;font-family:'Oswald',sans-serif;font-weight:700;font-size:1.45rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.logo .mark{width:42px;height:42px;border-radius:12px;background:var(--tint-blue);border:1px solid #C9D8F8;display:grid;place-items:center}
+.logo b{color:var(--blue);font-weight:700}
+nav{display:flex;gap:.4rem;margin:0 auto}
+nav button{all:unset;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sub);
+  padding:.55rem 1.1rem;border-radius:8px;transition:color .15s,background .15s}
+nav button:hover{color:var(--ink)}
+nav button.on{color:var(--blue);background:var(--tint-blue)}
+.btn{all:unset;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;
+  color:#fff;background:var(--blue);padding:.8rem 1.3rem;border-radius:10px;box-shadow:0 8px 20px rgba(37,99,235,.28);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(37,99,235,.34)}
+.btn.ghost{background:#fff;color:var(--blue);border:1px solid #C9D8F8;box-shadow:none}
+button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+main{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 1.6rem 4rem}
+
+/* ---------- hero ---------- */
+.hero{padding:3.2rem 0 2.4rem;max-width:820px}
+.pill{display:inline-flex;align-items:center;gap:.6rem;font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);
+  background:#fff;border:1px solid var(--line);border-radius:999px;padding:.55rem 1.1rem}
+h1{font-family:'Oswald',sans-serif;font-weight:700;font-size:clamp(2.8rem,7vw,5.4rem);line-height:1.02;letter-spacing:-.01em;margin:1.6rem 0 1.3rem}
+h1 .grad{background:linear-gradient(90deg,var(--blue),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:1.15rem;line-height:1.65;color:var(--sub);max-width:640px;margin:0 0 1.8rem}
+.cta{display:flex;gap:.8rem;flex-wrap:wrap}
+
+/* ---------- sections ---------- */
+.sec{display:flex;align-items:center;gap:.9rem;font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin:2.6rem 0 1.1rem}
+.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.tile:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(19,28,46,.08)}
+.tile .k{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sub)}
+.tile .v{font-family:'Oswald',sans-serif;font-size:3rem;font-weight:700;line-height:1.1;color:var(--c)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.4rem}
+.panel h3{margin:0 0 1rem;font-family:'Oswald',sans-serif;font-weight:600;font-size:1.15rem;letter-spacing:.06em;text-transform:uppercase}
+.bar-row{display:grid;grid-template-columns:120px 1fr 34px;gap:.8rem;align-items:center;margin:.7rem 0;font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--sub)}
+.track{height:12px;background:#EEF1F7;border-radius:999px;overflow:hidden}
+.fill{height:100%;border-radius:999px;background:var(--c);width:0;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.bar-row .n{text-align:right;color:var(--ink);font-weight:600}
+.donutwrap{display:flex;align-items:center;gap:1.6rem;flex-wrap:wrap}
+.legend div{font-family:'IBM Plex Mono',monospace;font-size:.8rem;margin:.45rem 0;display:flex;align-items:center;gap:.6rem;color:var(--sub)}
+.legend i{width:11px;height:11px;border-radius:3px;background:var(--c);display:inline-block}
+.note{margin-top:.9rem;font-size:.82rem;color:var(--sub)}
+
+/* ---------- evidence cards ---------- */
+.chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.chip{all:unset;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.76rem;letter-spacing:.08em;padding:.5rem .95rem;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--sub);transition:all .15s}
+.chip:hover{color:var(--ink)}
+.chip.on{color:#fff;background:var(--c);border-color:var(--c)}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.case{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.4rem 1.1rem;overflow:hidden;transition:transform .15s,box-shadow .15s,border-color .15s}
+.case::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--glow)}
+.case:hover{transform:translateY(-3px);border-color:var(--glow);box-shadow:0 16px 34px rgba(19,28,46,.10)}
+.sid{font-family:'IBM Plex Mono',monospace;font-size:.76rem;color:var(--sub);word-break:break-all;padding-right:6.5rem;margin-top:.2rem}
+.stamp{position:absolute;top:1.1rem;right:1.1rem;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.66rem;letter-spacing:.14em;padding:.3rem .6rem;border-radius:6px;
+  color:var(--glow);border:1.5px solid var(--glow);transform:rotate(3deg);background:#fff}
+.score{font-family:'Oswald',sans-serif;font-weight:700;font-size:1.9rem;line-height:1.1;margin:.5rem 0 .1rem;color:var(--glow);letter-spacing:.02em}
+.score small{font-size:1rem;color:var(--sub);font-weight:500}
+.desc{color:var(--sub);font-size:.9rem;margin:0 0 .6rem}
+.why{font-family:'IBM Plex Mono',monospace;font-size:.76rem;color:var(--ink);margin-bottom:.8rem;padding:.5rem .7rem;border-left:3px solid var(--glow);background:#F5F7FB;border-radius:0 8px 8px 0}
+.badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.7rem;padding:.25rem .6rem;border-radius:999px;margin:0 .3rem .35rem 0;background:#F1F4FA;color:var(--sub);border:1px solid var(--line)}
+.badge.ok{color:var(--green);background:#ECFDF3;border-color:#BBF7D0}
+.badge.bad{color:var(--red);background:#FEF2F2;border-color:#FECACA}
+.badge.warn{color:var(--amber);background:#FFFBEB;border-color:#FDE68A}
+.empty{grid-column:1/-1;color:var(--sub);border:1px dashed #C7CFDD;border-radius:14px;padding:2rem;text-align:center;background:#fff}
+
+/* ---------- reports ---------- */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:1.2rem}
+table{border-collapse:collapse;width:100%;font-family:'IBM Plex Mono',monospace;font-size:.74rem}
+th,td{padding:.7rem .9rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:#F1F4FA;color:var(--blue);font-weight:600;letter-spacing:.06em}
+tr:hover td{background:#F8FAFD}
+.hidden{display:none}
+.foot{margin-top:3rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--sub);letter-spacing:.04em}
+
+@media (max-width:900px){
+  .bar{flex-wrap:wrap;gap:.8rem}
+  nav{order:3;width:100%;overflow-x:auto;margin:0}
+  .tiles{grid-template-columns:1fr 1fr}
+  .grid2,.cards{grid-template-columns:1fr}
+  .btn.top{display:none}
+}
+
+/* ---------- PDF report (only visible when printing) ---------- */
+#report{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  html,body{background:#fff!important}
+  .bg,header,main,.foot{display:none!important}
+  #report{display:block!important;color:#131C2E;font-family:'Inter',system-ui,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #report h1{font-family:'Oswald',sans-serif;font-size:30pt;line-height:1.05;margin:.2em 0 .1em}
+  #report h1 .grad{background:none;color:#2563EB;-webkit-text-fill-color:#2563EB}
+  #report .meta{font-family:'IBM Plex Mono',monospace;font-size:8.5pt;color:#5B6478;letter-spacing:.06em}
+  #report .rule{height:3px;background:linear-gradient(90deg,#2563EB,#06B6D4);margin:10pt 0 14pt;border-radius:2px}
+  #report h2{font-family:'Oswald',sans-serif;font-size:13pt;letter-spacing:.08em;text-transform:uppercase;margin:16pt 0 6pt;color:#2563EB}
+  #report .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8pt}
+  #report .kpi{border:1px solid #E2E7F0;border-left:4px solid var(--c);border-radius:6pt;padding:7pt 9pt;break-inside:avoid}
+  #report .kpi .k{font-family:'IBM Plex Mono',monospace;font-size:7pt;letter-spacing:.1em;text-transform:uppercase;color:#5B6478}
+  #report .kpi .v{font-family:'Oswald',sans-serif;font-size:22pt;font-weight:700;color:var(--c);line-height:1.1}
+  #report ul{margin:4pt 0 0;padding-left:14pt;font-size:10pt;line-height:1.55}
+  #report table{width:100%;border-collapse:collapse;font-size:8pt;font-family:'IBM Plex Mono',monospace}
+  #report thead{display:table-header-group}
+  #report tr{break-inside:avoid}
+  #report th{background:#F1F4FA;color:#2563EB;text-align:left;padding:5pt 6pt;border-bottom:1px solid #C9D3E6}
+  #report td,#report th{white-space:normal!important;word-break:break-word}
+  #report td{padding:4.5pt 6pt;border-bottom:1px solid #E2E7F0;vertical-align:top}
+  #report td:nth-child(2),#report td:nth-child(3),#report td:nth-child(4),#report td:nth-child(5),#report td:nth-child(6),#report td:nth-child(7),#report th:nth-child(2),#report th:nth-child(3),#report th:nth-child(4),#report th:nth-child(5),#report th:nth-child(6),#report th:nth-child(7){white-space:nowrap!important;word-break:normal!important}
+  #report th:nth-child(1){width:27%}
+  #report .tag{display:inline-block;font-weight:600;font-size:7pt;letter-spacing:.08em;padding:1.5pt 5pt;border:1px solid var(--c);color:var(--c);border-radius:3pt}
+  #report .small{font-size:8pt;color:#5B6478;margin-top:14pt}
+}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <svg viewBox="0 0 1400 900" preserveAspectRatio="none">
+    <path d="M-50 620 C 250 380, 700 150, 1450 330" fill="none" stroke="#2563EB" stroke-opacity=".28" stroke-width="2.4" stroke-dasharray="14 12"/>
+    <path d="M300 980 C 700 640, 1100 560, 1500 620" fill="none" stroke="#06B6D4" stroke-opacity=".22" stroke-width="2.4" stroke-dasharray="14 12"/>
+    <circle cx="470" cy="365" r="22" fill="#2563EB" fill-opacity=".10"/><circle cx="470" cy="365" r="7" fill="#2563EB" fill-opacity=".7"/>
+  </svg>
+  <div id="hex"></div>
+</div>
+
+<header>
+  <div class="bar">
+    <div class="logo">
+      <span class="mark"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="11.5" cy="11.5" r="3"/><path d="m14 14 2.5 2.5"/></svg></span>
+      <span>Secure<b>MailScope</b></span>
+    </div>
+    <nav id="nav" aria-label="Sections">
+      <button data-page="console" class="on">Console</button>
+      <button data-page="evidence">Evidence</button>
+      <button data-page="reports">Reports</button>
+    </nav>
+    <button class="btn top" id="top-dl">Download PDF report</button>
+  </div>
+</header>
+
+<main>
+  <section id="page-console">
+    <div class="hero">
+      <span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="#2563EB"/></svg> Network forensics · Email security · PS 159</span>
+      <h1>Uncovering hidden<br>threats in your<br><span class="grad">mail servers</span></h1>
+      <p class="lede">Read real SMTP, IMAP and POP3 packet captures, check the encryption and certificates, and flag weak spots before they reach the inbox. Every case below comes from a capture.</p>
+      <div class="cta"><button class="btn" id="go-evidence">Open evidence</button><button class="btn ghost" id="go-reports">View raw data</button><button class="btn ghost" id="pdf-hero">Download PDF report</button></div>
+    </div>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="sec">Evidence breakdown</div>
+    <div class="grid2">
+      <div class="panel"><h3>Sessions by risk level</h3><div id="bars-risk"></div></div>
+      <div class="panel"><h3>Share of sessions</h3><div class="donutwrap"><svg id="donut" width="150" height="150" viewBox="0 0 42 42" role="img" aria-label="Share of sessions by risk level"></svg><div class="legend" id="legend"></div></div></div>
+    </div>
+
+    <div class="sec">Protection posture</div>
+    <div class="grid2">
+      <div class="panel"><h3>Encrypted vs plaintext</h3><div id="bars-enc"></div></div>
+      <div class="panel"><h3>Findings</h3><div id="bars-find"></div><div class="note">A session can appear in more than one finding.</div></div>
+    </div>
+    <div class="sec">Protocols covered</div>
+    <div class="panel"><div id="bars-proto"></div></div>
+  </section>
+
+  <section id="page-evidence" class="hidden">
+    <div class="hero" style="padding-bottom:1rem">
+      <span class="pill">Evidence · one case card per session</span>
+      <h1 style="font-size:clamp(2.4rem,5vw,4rem)">Case <span class="grad">files</span></h1>
+      <p class="lede">Each card is stamped with a verdict and carries its evidence. Use the filters to focus on what matters.</p>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Filter by risk level"></div>
+    <div class="cards" id="cards"></div>
+    <div class="sec">Export</div>
+    <button class="btn ghost" id="dl-json">Download as JSON</button>
+  </section>
+
+  <section id="page-reports" class="hidden">
+    <div class="hero" style="padding-bottom:1rem">
+      <span class="pill">Reports · raw pipeline output</span>
+      <h1 style="font-size:clamp(2.4rem,5vw,4rem)">Raw <span class="grad">data</span></h1>
+      <p class="lede mono" id="rawcount" style="font-size:.9rem"></p>
+    </div>
+    <div class="tablewrap"><table id="tbl"></table></div>
+    <button class="btn ghost" id="dl-csv">Download CSV</button> <button class="btn" id="pdf-rep">Download PDF report</button>
+  </section>
+
+  <div class="foot">Snapshot of real_data.csv · the data is built into this page and does not update on its own.</div>
+</main>
+
+<div id="report" aria-hidden="true"></div>
+<script>
+const DATA = [
+ {
+  "session_id": "bad_capture1.pcap",
+  "tls_version": 0.0,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": true,
+  "credentials_exposed": true,
+  "encrypted": false,
+  "cert_valid": false,
+  "risk_score": 100,
+  "risk_level": "HIGH",
+  "reason": "Credentials exposed in plaintext"
+ },
+ {
+  "session_id": "bad_capture2.pcap",
+  "tls_version": 0.0,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": true,
+  "credentials_exposed": true,
+  "encrypted": false,
+  "cert_valid": false,
+  "risk_score": 100,
+  "risk_level": "HIGH",
+  "reason": "Credentials exposed in plaintext"
+ },
+ {
+  "session_id": "bad_capture3.pcap",
+  "tls_version": 0.0,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": true,
+  "credentials_exposed": true,
+  "encrypted": false,
+  "cert_valid": false,
+  "risk_score": 100,
+  "risk_level": "HIGH",
+  "reason": "Credentials exposed in plaintext"
+ },
+ {
+  "session_id": "good_capture1.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": true,
+  "starttls_offered": true,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": true,
+  "risk_score": 0,
+  "risk_level": "LOW",
+  "reason": ""
+ },
+ {
+  "session_id": "good_capture2.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": true,
+  "starttls_offered": true,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": true,
+  "risk_score": 0,
+  "risk_level": "LOW",
+  "reason": ""
+ },
+ {
+  "session_id": "good_capture3.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": true,
+  "starttls_offered": true,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": true,
+  "risk_score": 0,
+  "risk_level": "LOW",
+  "reason": ""
+ },
+ {
+  "session_id": "bad_capture4_imap.pcap",
+  "tls_version": 0.0,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": true,
+  "encrypted": false,
+  "cert_valid": false,
+  "risk_score": 100,
+  "risk_level": "HIGH",
+  "reason": "Credentials exposed in plaintext"
+ },
+ {
+  "session_id": "bad_capture5_pop3.pcap",
+  "tls_version": 0.0,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": true,
+  "encrypted": false,
+  "cert_valid": false,
+  "risk_score": 100,
+  "risk_level": "HIGH",
+  "reason": "Credentials exposed in plaintext"
+ },
+ {
+  "session_id": "good_capture10_pop3.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": true,
+  "risk_score": 0,
+  "risk_level": "LOW",
+  "reason": ""
+ },
+ {
+  "session_id": "good_capture11_expiredcert.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": false,
+  "risk_score": 50,
+  "risk_level": "MEDIUM",
+  "reason": ""
+ },
+ {
+  "session_id": "good_capture12_certchain.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": true,
+  "risk_score": 0,
+  "risk_level": "LOW",
+  "reason": ""
+ },
+ {
+  "session_id": "good_capture13_tls12valid.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": true,
+  "risk_score": 0,
+  "risk_level": "LOW",
+  "reason": ""
+ },
+ {
+  "session_id": "good_capture14_tls12expired.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": false,
+  "risk_score": 50,
+  "risk_level": "MEDIUM",
+  "reason": "Chain contains expired certificate: CN=mail.good.test"
+ },
+ {
+  "session_id": "good_capture4_attachment.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": true,
+  "risk_score": 0,
+  "risk_level": "LOW",
+  "reason": ""
+ },
+ {
+  "session_id": "good_capture5_downgrade.pcap",
+  "tls_version": 0.0,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": false,
+  "cert_valid": false,
+  "risk_score": 100,
+  "risk_level": "HIGH",
+  "reason": "STARTTLS requested but no TLS handshake found \u2014 downgrade"
+ },
+ {
+  "session_id": "good_capture6_multirecipient.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": true,
+  "risk_score": 0,
+  "risk_level": "LOW",
+  "reason": ""
+ },
+ {
+  "session_id": "good_capture7_largeattachment.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": true,
+  "risk_score": 0,
+  "risk_level": "LOW",
+  "reason": ""
+ },
+ {
+  "session_id": "good_capture8_weaktls.pcap",
+  "tls_version": 0.0,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": false,
+  "risk_score": 100,
+  "risk_level": "HIGH",
+  "reason": ""
+ },
+ {
+  "session_id": "good_capture9_imap.pcap",
+  "tls_version": 1.2,
+  "weak_cipher": false,
+  "starttls_used": false,
+  "starttls_offered": false,
+  "insecure_auth": false,
+  "credentials_exposed": false,
+  "encrypted": true,
+  "cert_valid": true,
+  "risk_score": 0,
+  "risk_level": "LOW",
+  "reason": ""
+ }
+];
+
+const COLOR = {LOW:'#16A34A', MEDIUM:'#D97706', HIGH:'#DC2626'};
+const STAMP = {LOW:'SECURE', MEDIUM:'FLAGGED', HIGH:'VULNERABLE'};
+const VERDICT = {
+  HIGH:'Compromised in transit, or the encryption was stripped away.',
+  MEDIUM:'Encrypted, but a gap is left open.',
+  LOW:'Encrypted, and the certificate checks out.'
+};
+const $ = (s,r=document)=>r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const protoOf = id => /imap/i.test(id) ? 'IMAP' : /pop3/i.test(id) ? 'POP3' : 'SMTP';
+function tlsLabel(r){ if(r.tls_version>0) return 'TLS '+r.tls_version; return r.encrypted ? 'TLS (old, version not recorded)' : 'no TLS'; }
+function whyText(r){
+  if(r.reason) return r.reason;
+  if(r.encrypted && r.risk_level==='HIGH') return 'Old or weak TLS in use.';
+  if(r.encrypted && !r.cert_valid) return 'Certificate failed validation (for example expired or not trusted).';
+  return '';
+}
+const rows = DATA.slice().sort((a,b)=>b.risk_score-a.risk_score || a.session_id.localeCompare(b.session_id));
+const count = l => DATA.filter(r=>r.risk_level===l).length;
+
+/* backdrop hex columns */
+(function(){
+  const hex='0123456789ABCDEF'; let out='';
+  const xs=[6,13,21,29,37,47,58,66,76,86,93];
+  xs.forEach((x,i)=>{ let s=''; for(let k=0;k<44;k++) s+=hex[(k*7+i*5+ (k%3)*3)%16]+' ';
+    out+=`<div class="hexcol" style="left:${x}%;top:${-20+(i%4)*40}px">${s}</div>`; });
+  $('#hex').innerHTML=out;
+})();
+
+/* navigation */
+const pages=['console','evidence','reports'];
+function show(p){
+  pages.forEach(x=>$('#page-'+x).classList.toggle('hidden',x!==p));
+  [...$('#nav').children].forEach(b=>b.classList.toggle('on',b.dataset.page===p));
+  if(p==='console') animateBars();
+  window.scrollTo({top:0});
+}
+$('#nav').addEventListener('click',e=>{const b=e.target.closest('button'); if(b) show(b.dataset.page)});
+$('#go-evidence').onclick=()=>show('evidence');
+$('#go-reports').onclick=()=>show('reports');
+
+/* tiles + charts */
+$('#tiles').innerHTML=[
+  ['Sessions investigated',DATA.length,'#131C2E'],
+  ['Vulnerable',count('HIGH'),COLOR.HIGH],
+  ['Flagged',count('MEDIUM'),COLOR.MEDIUM],
+  ['Secure',count('LOW'),COLOR.LOW],
+].map(([k,v,c])=>`<div class="tile" style="--c:${c}"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+
+function bars(el,items){
+  $(el).innerHTML=items.map(([label,n,c])=>
+   `<div class="bar-row"><span>${esc(label)}</span><div class="track"><div class="fill" data-w="${DATA.length?n/DATA.length*100:0}" style="--c:${c}"></div></div><span class="n">${n}</span></div>`).join('');
+}
+bars('#bars-risk',[['LOW',count('LOW'),COLOR.LOW],['MEDIUM',count('MEDIUM'),COLOR.MEDIUM],['HIGH',count('HIGH'),COLOR.HIGH]]);
+const enc=DATA.filter(r=>r.encrypted).length;
+bars('#bars-enc',[['Encrypted',enc,'#06B6D4'],['Plaintext',DATA.length-enc,COLOR.HIGH]]);
+bars('#bars-find',[
+  ['Creds exposed',DATA.filter(r=>r.credentials_exposed).length,COLOR.HIGH],
+  ['Cert invalid',DATA.filter(r=>r.encrypted&&!r.cert_valid).length,COLOR.MEDIUM],
+  ['TLS downgrade',DATA.filter(r=>/downgrade/i.test(r.reason)).length,COLOR.HIGH]]);
+bars('#bars-proto',['SMTP','IMAP','POP3'].map((p,i)=>[p,DATA.filter(r=>protoOf(r.session_id)===p).length,['#2563EB','#06B6D4','#8A94A8'][i]]));
+
+(function(){
+  let off=25,out='';const R=15.915;
+  out+=`<circle cx="21" cy="21" r="${R}" fill="none" stroke="#EEF1F7" stroke-width="6"/>`;
+  ['LOW','MEDIUM','HIGH'].forEach(l=>{const n=count(l); if(!n) return; const pct=n/DATA.length*100;
+    out+=`<circle cx="21" cy="21" r="${R}" fill="none" stroke="${COLOR[l]}" stroke-width="6" stroke-dasharray="${pct} ${100-pct}" stroke-dashoffset="${off}"/>`; off-=pct;});
+  $('#donut').innerHTML=out;
+  $('#legend').innerHTML=['LOW','MEDIUM','HIGH'].map(l=>`<div style="--c:${COLOR[l]}"><i></i>${l} · ${count(l)}</div>`).join('');
+})();
+function animateBars(){document.querySelectorAll('.fill').forEach(f=>{f.style.width='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.width=f.dataset.w+'%'}))})}
+animateBars();
+
+/* evidence */
+let active=new Set(['LOW','MEDIUM','HIGH']);
+function renderChips(){
+  $('#chips').innerHTML=['HIGH','MEDIUM','LOW'].map(l=>`<button class="chip ${active.has(l)?'on':''}" data-l="${l}" style="--c:${COLOR[l]}" aria-pressed="${active.has(l)}">${l} · ${count(l)}</button>`).join('');
+}
+function renderCards(){
+  const view=rows.filter(r=>active.has(r.risk_level));
+  if(!view.length){$('#cards').innerHTML='<div class="empty">No sessions match that filter. The case file is intact, just empty here.</div>';return}
+  $('#cards').innerHTML=view.map(r=>{
+    const c=COLOR[r.risk_level], why=whyText(r);
+    return `<div class="case" style="--glow:${c}">
+      <div class="stamp">${STAMP[r.risk_level]}</div>
+      <div class="sid">SESSION · ${esc(r.session_id)}</div>
+      <div class="score">${r.risk_level} RISK <small>${r.risk_score}/100</small></div>
+      <p class="desc">${VERDICT[r.risk_level]}</p>
+      ${why?`<div class="why">${esc(why)}</div>`:''}
+      <div>
+        <span class="badge">${protoOf(r.session_id)}</span>
+        <span class="badge ${r.encrypted?'ok':'bad'}">Encrypted: ${r.encrypted?'yes':'no'}</span>
+        <span class="badge">${esc(tlsLabel(r))}</span>
+        <span class="badge ${r.credentials_exposed?'bad':'ok'}">Credentials exposed: ${r.credentials_exposed?'yes':'no'}</span>
+        <span class="badge ${r.cert_valid?'ok':(r.encrypted?'warn':'')}">Cert valid: ${r.cert_valid?'yes':(r.encrypted?'no':'n/a')}</span>
+      </div></div>`;
+  }).join('');
+}
+$('#chips').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b) return;
+  const l=b.dataset.l; active.has(l)?active.delete(l):active.add(l);
+  renderChips(); renderCards(); $('#chips [data-l="'+l+'"]').focus();
+});
+renderChips(); renderCards();
+
+function download(name,text,mime){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type:mime}));
+  a.download=name; document.body.appendChild(a); a.click(); a.remove();
+}
+const dlJson=()=>download('securemailscope_report.json',JSON.stringify(rows.filter(r=>active.has(r.risk_level)),null,2),'application/json');
+$('#dl-json').onclick=dlJson;
+
+/* reports */
+const cols=Object.keys(DATA[0]);
+$('#rawcount').textContent=DATA.length+' unique sessions · built-in snapshot of real_data.csv';
+$('#tbl').innerHTML='<thead><tr>'+cols.map(c=>`<th>${esc(c)}</th>`).join('')+'</tr></thead><tbody>'+
+  DATA.map(r=>'<tr>'+cols.map(c=>`<td>${esc(r[c])}</td>`).join('')+'</tr>').join('')+'</tbody>';
+$('#dl-csv').onclick=()=>{
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+  download('real_data.csv',cols.join(',')+'\n'+DATA.map(r=>cols.map(c=>q(r[c])).join(',')).join('\n'),'text/csv');
+};
+
+/* ---------- PDF report ---------- */
+function buildReport(){
+  const d=new Date().toLocaleString('en-IN',{dateStyle:'long',timeStyle:'short'});
+  const kpi=(k,v,c)=>`<div class="kpi" style="--c:${c}"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  const encN=DATA.filter(r=>r.encrypted).length;
+  const credN=DATA.filter(r=>r.credentials_exposed).length;
+  const certN=DATA.filter(r=>r.encrypted&&!r.cert_valid).length;
+  const dgN=DATA.filter(r=>/downgrade/i.test(r.reason)).length;
+  const trs=rows.map(r=>{const c=COLOR[r.risk_level];const why=whyText(r);
+    return `<tr><td>${esc(r.session_id)}</td><td>${protoOf(r.session_id)}</td><td>${esc(tlsLabel(r).replace('TLS (old, version not recorded)','TLS (old)'))}</td>
+      <td>${r.encrypted?'yes':'no'}</td><td>${r.credentials_exposed?'yes':'no'}</td>
+      <td>${r.cert_valid?'yes':(r.encrypted?'no':'n/a')}</td>
+      <td><span class="tag" style="--c:${c}">${STAMP[r.risk_level]} ${r.risk_score}</span></td><td>${esc(why)}</td></tr>`}).join('');
+  $('#report').innerHTML=`
+    <div class="meta">SECUREMAILSCOPE · SIH'26 · PS 159 (SIH26159) · GENERATED ${esc(d)}</div>
+    <h1>Mail server security <span class="grad">forensic report</span></h1>
+    <div class="rule"></div>
+    <div class="kpis">${kpi('Sessions investigated',DATA.length,'#131C2E')}${kpi('Vulnerable',count('HIGH'),COLOR.HIGH)}${kpi('Flagged',count('MEDIUM'),COLOR.MEDIUM)}${kpi('Secure',count('LOW'),COLOR.LOW)}</div>
+    <h2>Key findings</h2>
+    <ul>
+      <li>${encN} of ${DATA.length} sessions were encrypted; ${DATA.length-encN} were plaintext.</li>
+      <li>${credN} sessions exposed login credentials in plaintext.</li>
+      <li>${certN} encrypted sessions had a certificate that failed validation.</li>
+      <li>${dgN} session showed a STARTTLS downgrade (encryption requested but never started).</li>
+    </ul>
+    <h2>Session details</h2>
+    <table><thead><tr><th>Session</th><th>Proto</th><th>TLS</th><th>Enc.</th><th>Creds</th><th>Cert</th><th>Verdict</th><th>Reason</th></tr></thead><tbody>${trs}</tbody></table>
+    <div class="small">Method: passive analysis of packet captures (PCAP) of SMTP, IMAP and POP3 traffic. Source: real_data.csv snapshot built into this page.</div>`;
+}
+function exportPdf(){
+  buildReport();
+  const old=document.title; document.title='SecureMailScope_Report';
+  const restore=()=>{document.title=old; window.removeEventListener('afterprint',restore)};
+  window.addEventListener('afterprint',restore);
+  window.print();
+}
+$('#top-dl').onclick=exportPdf; $('#pdf-hero').onclick=exportPdf; $('#pdf-rep').onclick=exportPdf;
+</script>
+</body>
+</html>
